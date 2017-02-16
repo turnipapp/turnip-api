@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/turnipapp/turnip-api/issues"
   },
-  "homepage": "https://github.com/turnipapp/turnip-api#readme"
+  "homepage": "https://github.com/turnipapp/turnip-api#readme",
+  "dependencies": {
+    "bcrypt": "^1.0.2",
+    "express": "^4.14.1",
+    "mongoose": "^4.8.3"
+  }
 }
