@@ -52,8 +52,6 @@ exports.signup = function(req, res) {
 };
 
 function allowSignup(body, db, res) {
-    var token = getToken(32);
-    var key = getToken(16);
     var collection = db.collection('users');
     encrypt(body.password, function(err, hash) {
         var user = {
