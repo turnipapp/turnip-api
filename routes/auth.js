@@ -19,7 +19,7 @@ exports.login = function(req, res) {
                 var user = docs[0];
                 bcrypt.compare(req.body.password, user.password, function(err, match) {
                     if(!match) {
-                        res.json({success: false, message: 'Incorrect passwword'});
+                        res.json({success: false, message: 'Incorrect password'});
                     } else {
                         var token = jwt.sign(user, config.secret, {
                             expiresIn: 86400 // expires in 24 hours
