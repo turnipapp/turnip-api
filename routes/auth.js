@@ -20,7 +20,12 @@ exports.login = function(req, res) {
                     if(!match) {
                         res.json({success: false, message: 'Incorrect passwword'});
                     } else {
-                        var token = jwt.sign(user, config.secret, {
+                        var inToken = {
+                            _id: user._id,
+                            iat: user.iat,
+                            exp: user.exp
+                        };
+                        var token = jwt.sign(inToken, config.secret, {
                             expiresIn: 86400 // expires in 24 hours
                         });
                         res.json({

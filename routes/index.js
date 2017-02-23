@@ -2,7 +2,7 @@ var router      = require('express').Router();
 var auth        = require('./auth');
 var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config      = require('../config'); // get our config file
-
+var server      = require('./valid_token');
 
 /**********************
  * UNPROTECTED ROUTES *
