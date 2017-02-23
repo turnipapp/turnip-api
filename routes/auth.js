@@ -57,17 +57,15 @@ exports.signup = function(req, res) {
 };
 
 function allowSignup(body, db, res) {
-    var token = getToken(32);
-    var key = getToken(16);
     var collection = db.collection('users');
     encrypt(body.password, function(err, hash) {
-        var app = {
+        var user = {
             email: body.email,
             firstName: body.firstName,
             lastName: body.lastName,
             password: hash
         };
-        collection.insert(app, function(err, result) {
+        collection.insert(user, function(err, result) {
             if(err) {
                 res.json({success: false, message: 'Database error'});
             }
