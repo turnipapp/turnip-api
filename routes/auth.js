@@ -56,6 +56,19 @@ exports.signup = function(req, res) {
     });
 };
 
+// Expects token
+exports.account = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var colleciton = db.collection('users');
+
+        var userId = req.decoded._id;
+        var userInfo = colleciton.find(ObjectId(userId)).toArray(function(err, document){
+            res.json({firstName: document.firstName, lastName: document.lastName, email: document.email});
+        });
+
+    });
+}
+
 function allowSignup(body, db, res) {
     var collection = db.collection('users');
     encrypt(body.password, function(err, hash) {
