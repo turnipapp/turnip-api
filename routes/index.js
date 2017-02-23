@@ -12,6 +12,9 @@ var server      = require('./valid_token');
 router.post('/auth/login', function(req, res){ auth.login(req, res); } );
 router.post('/auth/signup', function(req, res){ auth.signup(req, res); } );
 
+/* Accounts */
+router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
+
 /********************
  * PROTECTED ROUTES *
  *********************/
