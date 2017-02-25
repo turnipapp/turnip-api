@@ -1,5 +1,6 @@
 var router      = require('express').Router();
 var auth        = require('./auth');
+var events      = require('./events');
 var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config      = require('../config'); // get our config file
 var server      = require('./valid_token');
@@ -47,5 +48,6 @@ router.use(function(req, res, next) {
 
 /* Server Test - Should return 200 */
 router.get('/isValidToken', function(req, res) { server.status(req, res); } );
+router.post('/event', function(req, res) { events.create(req, res); } );
 
 module.exports = router;
