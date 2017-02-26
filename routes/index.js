@@ -50,5 +50,6 @@ router.use(function(req, res, next) {
 router.get('/isValidToken', function(req, res) { server.status(req, res); } );
 router.post('/event', function(req, res) { events.create(req, res); } );
 router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
+router.post('/event/past', function (req, res) { events.past(req, res); } );
 
 module.exports = router;
