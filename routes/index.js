@@ -1,8 +1,9 @@
 var router      = require('express').Router();
 var auth        = require('./auth');
+var events      = require('./events');
 var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config      = require('../config'); // get our config file
-
+var server      = require('./valid_token');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -11,6 +12,9 @@ var config      = require('../config'); // get our config file
 /* Auth */
 router.post('/auth/login', function(req, res){ auth.login(req, res); } );
 router.post('/auth/signup', function(req, res){ auth.signup(req, res); } );
+
+/* Accounts */
+router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
 
 /********************
  * PROTECTED ROUTES *
@@ -44,5 +48,7 @@ router.use(function(req, res, next) {
 
 /* Server Test - Should return 200 */
 router.get('/isValidToken', function(req, res) { server.status(req, res); } );
+router.post('/event', function(req, res) { events.create(req, res); } );
+router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
 
 module.exports = router;

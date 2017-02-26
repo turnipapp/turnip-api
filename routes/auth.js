@@ -21,11 +21,16 @@ exports.login = function(req, res) {
                     if(!match) {
                         res.json({success: false, message: 'Incorrect passwword'});
                     } else {
-                        var token = jwt.sign(user, config.secret, {
+                        var inToken = {
+                            _id: user._id,
+                            iat: user.iat,
+                            exp: user.exp
+                        };
+                        var token = jwt.sign(inToken, config.secret, {
                             expiresIn: 86400 // expires in 24 hours
                         });
                         res.json({
-        					success: true,
+        					          success: true,
                             token: token,
                             message: ''
         				});
@@ -58,17 +63,15 @@ exports.signup = function(req, res) {
 };
 
 function allowSignup(body, db, res) {
-    var token = getToken(32);
-    var key = getToken(16);
     var collection = db.collection('users');
     encrypt(body.password, function(err, hash) {
-        var app = {
+        var user = {
             email: body.email,
             firstName: body.firstName,
             lastName: body.lastName,
             password: hash
         };
-        collection.insert(app, function(err, result) {
+        collection.insert(user, function(err, result) {
             if(err) {
                 res.json({success: false, message: 'Database error'});
             }
