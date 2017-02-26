@@ -49,5 +49,6 @@ router.use(function(req, res, next) {
 /* Server Test - Should return 200 */
 router.get('/isValidToken', function(req, res) { server.status(req, res); } );
 router.post('/event', function(req, res) { events.create(req, res); } );
+router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
 
 module.exports = router;
