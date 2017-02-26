@@ -29,7 +29,7 @@ exports.login = function(req, res) {
                             expiresIn: 86400 // expires in 24 hours
                         });
                         res.json({
-        					success: true,
+        					          success: true,
                             token: token,
                             message: ''
         				});
