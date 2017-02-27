@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var valid_token = require('./valid_token');
@@ -8,7 +9,7 @@ exports.create = function(req, res) {
         var events = db.collection('events');
         var users = db.collection('users');
         var connections = db.collection('connections');
-        users.find({_id: req.decoded._id}).toArray(function(err, docs){
+        users.find({"_id": new ObjectID(req.decoded._id)}).toArray(function(err, docs){
           if (err) {
               res.json({success: false, message: 'Users database error'});
           }
@@ -17,6 +18,7 @@ exports.create = function(req, res) {
                 res.json({success: false, message: 'No matching user found'});
             } else {
                 var myEvent = {
+                    owner: req.decoded._id,
                     title: req.body.title,
                     dateStart: req.body.dateStart,
                     dateEnd: req.body.dateEnd,
@@ -26,16 +28,9 @@ exports.create = function(req, res) {
                     if(err) {
                         res.json({success: false, message: 'Events database error'});
                     }
-                    connections.insert({userId: req.decoded._id, eventId: result.id}, function(newErr, newResult) {
-                      if (newErr) {
-                        res.json({success: false, message: 'Connections database error'});
-                      }
                       res.json({success: true, message: 'Event created Successfully'});
-                    });
-                });
-
-
-            }
+                  });
+                }
         });
     });
 };
