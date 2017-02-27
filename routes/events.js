@@ -6,30 +6,50 @@ var valid_token = require('./valid_token');
 
 exports.create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-        var events = db.collection('events');
         var users = db.collection('users');
-        var connections = db.collection('connections');
-        users.findOne({_id: req.decoded._id}, function(err){
+        users.findOne({_id: new ObjectID(req.decoded._id)}, function(err){
           if (err) {
               res.json({success: false, message: 'Users database error'});
           }
-                var myEvent = {
-                    owner: req.decoded._id,
-                    title: req.body.title,
-                    dateStart: req.body.dateStart,
-                    dateEnd: req.body.dateEnd,
-                    location: req.body.location
-                };
-
-                events.insert(myEvent, function(err, result) {
-                    if(err) {
-                        res.json({success: false, message: 'Events database error'});
-                    }
-                res.json({success: true, message: 'Event created Successfully'});
-                });
+          var events = db.collection('events');
+          var myEvent = {
+              owner: req.decoded._id,
+              title: req.body.title,
+              dateStart: req.body.dateStart,
+              dateEnd: req.body.dateEnd,
+              location: req.body.location
+          };
+          events.insert(myEvent, function(err, result) {
+              if(err) {
+                  res.json({success: false, message: 'Events database error'});
+              }
+              res.json({success: true, message: 'Event created Successfully'});
+          });
         });
     });
 };
+
+exports.response = function(req, res) {
+  MongoClient.connect(url, function(err, db) {
+    var users = db.collection('users');
+    users.findOne({_id: req.decoded._id}, function(err) {
+      if (err) {
+          res.json({success: false, message: 'Users database error'});
+      }
+      var invites = db.collection('invites');
+      invites.findOne({eventID: req.body.eventID, userID: req.decoded._id}, function(err, invite) {
+        if (err) {
+          res.json({success: false, message: 'Invites database error'});
+        }
+        invite.response = req.body.response;
+        res.json({success: true, message: 'Response updated successfully'});
+      });
+    });
+  });
+}
+
+
+
 
 exports.upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
