@@ -48,5 +48,6 @@ router.get('/isValidToken', function(req, res) { server.status(req, res); } );
 router.post('/event', function(req, res) { events.create(req, res); } );
 router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
 router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
+router.post('/account/update', function(req, res){ account.update(req, res); } );
 
 module.exports = router;
