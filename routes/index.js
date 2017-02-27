@@ -51,5 +51,6 @@ router.get('/isValidToken', function(req, res) { server.status(req, res); } );
 router.post('/event', function(req, res) { events.create(req, res); } );
 router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
 router.post('/event/past', function (req, res) { events.past(req, res); } );
+router.post('/event/response', function (req, res) { events.response(req, res); } );
 
 module.exports = router;
