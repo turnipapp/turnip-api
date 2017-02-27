@@ -9,14 +9,10 @@ exports.create = function(req, res) {
         var events = db.collection('events');
         var users = db.collection('users');
         var connections = db.collection('connections');
-        users.find({"_id": new ObjectID(req.decoded._id)}).toArray(function(err, docs){
+        users.findOne({_id: req.decoded._id}, function(err){
           if (err) {
               res.json({success: false, message: 'Users database error'});
           }
-
-          if(docs.length === 0) {
-                res.json({success: false, message: 'No matching user found'});
-            } else {
                 var myEvent = {
                     owner: req.decoded._id,
                     title: req.body.title,
@@ -24,13 +20,13 @@ exports.create = function(req, res) {
                     dateEnd: req.body.dateEnd,
                     location: req.body.location
                 };
+
                 events.insert(myEvent, function(err, result) {
                     if(err) {
                         res.json({success: false, message: 'Events database error'});
                     }
-                      res.json({success: true, message: 'Event created Successfully'});
-                  });
-                }
+                res.json({success: true, message: 'Event created Successfully'});
+                });
         });
     });
 };
@@ -66,4 +62,4 @@ exports.upcoming = function(req, res) {
             }
         });
     });
-};
+}
