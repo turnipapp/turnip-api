@@ -12,8 +12,8 @@ exports.getAccountInfo = function(req, res) {
         var colleciton = db.collection('users');
 
         var userId = req.decoded._id;
-        colleciton.find(ObjectId(userId)).toArray(function(err, document){
-            res.json({firstName: document.firstName, lastName: document.lastName, email: document.email});
+        colleciton.findOne(ObjectId(userId), function(err, user){
+            res.json({firstName: user.firstName, lastName: user.lastName, email: user.email});
         });
     });
 }
@@ -24,7 +24,13 @@ exports.update = function(req, res) {
         var colleciton = db.collection('users');
 
         var userId = req.decoded._id;
-        
+        collection.findOne(ObjectId(userId), function(err, user) {
+            bcrypt.compare(req.body.password, user.password, function(err, match) {
+                if(!match) {
+                    res.json({success: false, message: 'Incorrect password'})
+                }
+            });
+        });
     });
 }
 
