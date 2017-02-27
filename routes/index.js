@@ -50,5 +50,6 @@ router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); 
 router.post('/events/past', function (req, res) { events.past(req, res); } );
 router.put('/events/response', function (req, res) { events.response(req, res); } );
 router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
+router.post('/account/update', function(req, res){ account.update(req, res); } );
 
 module.exports = router;
