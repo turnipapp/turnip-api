@@ -72,3 +72,33 @@ exports.upcoming = function(req, res) {
         });
     });
 };
+
+exports.past = function(req, res) {
+    MongoClient.connect(url, function (err, db) {
+        var collection = db.collection('events');
+
+        collection.find({email: req.body.email}).toArray(function(err, docs) {
+            if(docs.length === 0) {
+                res.json({success: false, message: 'No email'});
+            } else {
+                var user = docs[0];
+
+                var inToken = {
+                    _id: user._id,
+                    iat: user.iat,
+                    exp: user.exp
+                };
+
+                var token = jwt.sign(inToken, config.secret, {
+                    expiresIn: 86400
+                });
+
+                res.json({
+                    success: true,
+                    token: token,
+                    message: ''
+                }); 
+            }
+        }
+    }    
+};
