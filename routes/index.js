@@ -13,9 +13,6 @@ var server      = require('./valid_token');
 router.post('/auth/login', function(req, res){ auth.login(req, res); } );
 router.post('/auth/signup', function(req, res){ auth.signup(req, res); } );
 
-/* Accounts */
-router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
-
 /********************
  * PROTECTED ROUTES *
  *********************/
@@ -52,5 +49,6 @@ router.post('/event', function(req, res) { events.create(req, res); } );
 router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
 router.post('/event/past', function (req, res) { events.past(req, res); } );
 router.post('/event/response', function (req, res) { events.response(req, res); } );
+router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
 
 module.exports = router;
