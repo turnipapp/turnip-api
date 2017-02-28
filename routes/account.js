@@ -2,6 +2,8 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
+var bcrypt      = require('bcrypt');
+var saltRounds  = 10;
 var valid_token = require('./valid_token');
 
 // Expects token
@@ -22,16 +24,16 @@ exports.update = function(req, res) {
         var users = db.collection('users');
 
         var userId = req.decoded._id;
-        users.findOne(ObjectId(userId), function(err, user) {
+        users.findOne({"_id": new ObjectID(userId)}, function(err, user) {
             bcrypt.compare(req.body.password, user.password, function(err, match) {
                 if(!match){
                     res.json({success: false, message: 'Password incorrect'});
                 } else {
 
-                    if(req.hasOwnProperty('newPassword')){
-                        updateWithPassword(req, users, res, userId);
+                    if('newPassword' in req.body){
+                        updateWithPassword(req.body, db, res, userId);
                     } else {
-                        updateWithoutPassword(req, users, res, userId);
+                        updateWithoutPassword(req.body, db, res, userId);
                     }
                 }
             });
@@ -43,7 +45,7 @@ function updateWithPassword(body, db, res, userId){
     var users = db.collection('users');
 
     encrypt(body.newPassword, function(err, hash) {
-        users.update({_id: userId}, {
+        users.update({"_id": new ObjectID(userId)}, {
             email: body.email,
             firstName: body.firstName,
             lastName: body.lastName,
@@ -55,15 +57,13 @@ function updateWithPassword(body, db, res, userId){
 
             res.json({success: true, message: 'Successfully updated account info.'});
         });
-
-
     });
 }
 
 function updateWithoutPassword(body, db, res, userId){
     var users = db.collection('users');
 
-    users.update({_id: userId}, {$set: {
+    users.update({"_id": new ObjectID(userId)}, {$set: {
         email: body.email,
         firstName: body.firstName,
         lastName: body.lastName
