@@ -1,5 +1,6 @@
 var router      = require('express').Router();
 var auth        = require('./auth');
+var account     = require('./account');
 var events      = require('./events');
 var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config      = require('../config'); // get our config file
@@ -12,9 +13,6 @@ var server      = require('./valid_token');
 /* Auth */
 router.post('/auth/login', function(req, res){ auth.login(req, res); } );
 router.post('/auth/signup', function(req, res){ auth.signup(req, res); } );
-
-/* Accounts */
-router.post('/account/getAccountInfo', function(req, res){ account.getAccountInfo(req, res); } );
 
 /********************
  * PROTECTED ROUTES *
@@ -50,8 +48,14 @@ router.use(function(req, res, next) {
 router.get('/isValidToken', function(req, res) { server.status(req, res); } );
 router.post('/event', function(req, res) { events.create(req, res); } );
 router.post('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
+<<<<<<< HEAD
 router.post('/event/past', function (req, res) { events.past(req, res); } );
 router.post('/event/invite', function (req, res) { events.invite(req, res); } );
 router.post('/event/response', function (req, res) { events.response(req, res); } );
+=======
+router.post('/events/past', function (req, res) { events.past(req, res); } );
+router.put('/events/response', function (req, res) { events.response(req, res); } );
+router.get('/account', function(req, res){ account.getAccountInfo(req, res); } );
+>>>>>>> master
 
 module.exports = router;
