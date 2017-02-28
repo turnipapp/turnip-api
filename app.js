@@ -6,6 +6,7 @@ var cors            = require('cors');
 var mongoUrl        = process.env.MONGO_URL || 'mongodb://localhost:27017/rachis';
 var mongoSessionUrl = process.env.MONGO_SESSION_URL || 'mongodb://localhost:27017/rachis';
 var port            = process.env.PORT || 5000;
+var logger          = require('morgan');
 
 // JSON WEB TOKEN
 app.set('superSecret', 'ThIsIsSoSeCrEt'); // secret variable
@@ -15,6 +16,7 @@ app.set('superSecret', 'ThIsIsSoSeCrEt'); // secret variable
  * Allows for external services to make API requests
  */
 app.use(cors());
+app.use(logger('dev'));
 
 /* Body Parser
  * Parses incoming requests and puts them in the req.body
