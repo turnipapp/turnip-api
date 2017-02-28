@@ -31,12 +31,23 @@ exports.update = function(req, res) {
                     res.json({success: false, message: 'Password incorrect'});
                 } else {
 
-                    
-
+                    if(req.hasOwnProperty('newPassword')){
+                        updateWithPassword(req, collection, res);
+                    } else {
+                        updateWithoutPassword(req, collection, res);
+                    }
                 }
             });
         });
     });
+}
+
+function updateWithPassword(body, db, res){
+    
+}
+
+function updateWithoutPassword(body, db, res){
+
 }
 
 function encrypt(password, callback) {
