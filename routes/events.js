@@ -57,28 +57,10 @@ exports.upcoming = function(req, res) {
 
         collection.find({email: req.body.email}).toArray(function(err, docs){
             if(docs.length === 0) {
-                res.json({success: false, message: 'No email'});
+                res.json({success: false, message: 'No events found'});
             } else {
                 var user = docs[0];
-                bcrypt.compare(req.body.password, user.password, function(err, match) {
-                    if(!match) {
-                        res.json({success: false, message: 'Incorrect passwword'});
-                    } else {
-                        var inToken = {
-                            _id: user._id,
-                            iat: user.iat,
-                            exp: user.exp
-                        };
-                        var token = jwt.sign(inToken, config.secret, {
-                            expiresIn: 86400 // expires in 24 hours
-                        });
-                        res.json({
-        					success: true,
-                            token: token,
-                            message: ''
-        				});
-                    }
-                });
+                res.send({success: true, message: 'Retrieved Events', docs})
             }
         });
     });
@@ -89,13 +71,25 @@ exports.invite = function (req, res) {
         if (err)
             res.json({success: false, message: 'Error inviting user'})
         
-        var events = db.collection('events');
-        var mongo = require('mongodb'); 
-        var o_id = new mongo.ObjectID(req.body.eventId); 
+        var events = db.collection('events')
+        var invites = db.colleciton('invites')            
 
-        events.findOne({_id: o_id}, function (err, doc)  {
+        events.findOne({_id: new ObjectID(req.body.eventID), owner: req.decoded._id }, function (err, doc)  {
+            if (err)
+                res.json({success: false, message: 'Error retrieving event'})
+            //TODO: Validate invitee information
+            var invite = {
+                owner: req.decoded._id,
+                eventID: req.body.eventID,
+                userID: req.body.email
+            }
+            invites.insert(invite, function (err, result) {      
+                if (err) {
+                    res.json({success: false, message: "Invites insert error"})
+                }
+                res.json({success: true, message: "Invite created successfully"})
+            })
         })   
-
     });
 }
 
