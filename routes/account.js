@@ -3,6 +3,7 @@ var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var crypto      = require('crypto');
 var bcrypt      = require('bcrypt');
+var ObjectId = require('mongodb').ObjectID;
 var saltRounds  = 10;
 var valid_token = require('./valid_token');
 
@@ -21,17 +22,32 @@ exports.getAccountInfo = function(req, res) {
 // Expects token, firstName, lastName, email, password, new password
 exports.update = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-        var colleciton = db.collection('users');
+        var collection = db.collection('users');
 
         var userId = req.decoded._id;
         collection.findOne(ObjectId(userId), function(err, user) {
             bcrypt.compare(req.body.password, user.password, function(err, match) {
-                if(!match) {
-                    res.json({success: false, message: 'Incorrect password'})
+                if(!match){
+                    res.json({success: false, message: 'Password incorrect'});
+                } else {
+
+                    if(req.hasOwnProperty('newPassword')){
+                        updateWithPassword(req, collection, );
+                    } else {
+                        updateWithoutPassword();
+                    }
                 }
             });
         });
     });
+}
+
+function updateWithPassword(body, db, res){
+
+}
+
+function updateWithoutPassword(body, db, res){
+
 }
 
 function encrypt(password, callback) {
