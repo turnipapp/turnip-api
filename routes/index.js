@@ -1,6 +1,6 @@
 var router      = require('express').Router();
 var auth        = require('./auth');
-var auth        = require('./account');
+var account     = require('./account');
 var events      = require('./events');
 var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config      = require('../config'); // get our config file
