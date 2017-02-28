@@ -29,9 +29,9 @@ exports.update = function(req, res) {
                 } else {
 
                     if(req.hasOwnProperty('newPassword')){
-                        updateWithPassword(req, users, res);
+                        updateWithPassword(req, users, res, userId);
                     } else {
-                        updateWithoutPassword(req, users, res);
+                        updateWithoutPassword(req, users, res, userId);
                     }
                 }
             });
@@ -39,12 +39,41 @@ exports.update = function(req, res) {
     });
 }
 
-function updateWithPassword(body, db, res){
-    
+function updateWithPassword(body, db, res, userId){
+    var users = db.collection('users');
+
+    encrypt(body.newPassword, function(err, hash) {
+        users.update({_id: userId}, {
+            email: body.email,
+            firstName: body.firstName,
+            lastName: body.lastName,
+            password: hash
+        }, function(err, result) {
+            if(err) {
+                res.json({success: false, message: 'Database error'});
+            }
+
+            res.json({success: true, message: 'Successfully updated account info.'});
+        });
+
+
+    });
 }
 
-function updateWithoutPassword(body, db, res){
+function updateWithoutPassword(body, db, res, userId){
+    var users = db.collection('users');
 
+    users.update({_id: userId}, {$set: {
+        email: body.email,
+        firstName: body.firstName,
+        lastName: body.lastName
+    }}, function(err, result) {
+        if(err) {
+                res.json({success: false, message: 'Database error'});
+            }
+
+            res.json({success: true, message: 'Successfully updated account info.'});
+    });
 }
 
 function encrypt(password, callback) {
