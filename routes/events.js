@@ -56,12 +56,15 @@ exports.upcoming = function(req, res) {
 
         var collection = db.collection('events');
 
-        collection.find({email: req.body.email}).toArray(function(err, docs){
-            if (err)
+        collection.find({email: req.decoded.email}).toArray(function(err, docs){
+            if (err) {
                 res.json({success: false, message: 'Error while querying database'})
-            if(docs.length === 0)
+                return
+            }
+            if(docs.length === 0) {
                 res.json({success: false, message: 'No events found'})
-           
+                return
+            }
             
             var upcoming = []
             var past = []
@@ -76,7 +79,7 @@ exports.upcoming = function(req, res) {
                 else
                     past.push (docs[i])
             }
-            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})            
+            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
         })
     })
 }
@@ -89,31 +92,42 @@ exports.invite = function (req, res) {
         }
         if (!req.body.eventID || !req.decoded._id || ! req.body.userID) {
             res.json({success: false, message: 'Error inviting user: NE Info'})
-            return;
+            return
         }
         var events = db.collection('events')
+        var users = db.collection('users')
         var invites = db.collection('invites') 
         
 
-        events.findOne({_id: new ObjectID(req.body.eventID), owner: req.decoded._id }, function (err, doc)  {
-
-            if (err)
-                res.json({success: false, message: 'Error retrieving event'})
+        events.findOne({_id: new ObjectID(req.body.eventID), owner: req.decoded._id }, function (err)  {
+            if (err) {
+                res.json({success: false, message: 'Error retrieving event'}) 
+                return
+            }   
             
-            //TODO: Validate invitee information
-            var invite = {
-                owner: req.decoded._id,
-                eventID: req.body.eventID,
-                userID: req.body.userID
-            }
-            
-            invites.insert(invite, function (err, result) {      
-                if (err) {
-                    res.json({success: false, message: "Invites insert error"})
+            //Find User (will add multiple later)    
+            users.findOne({email: req.body.email}, function (err, doc) {
+                if (!doc) {
+                    res.json({success: false, message: "No user found with that email"})
+                    return
                 }
-                res.json({success: true, message: "Invite created successfully"})
+                var invite = {
+                    owner: req.decoded._id,
+                    eventID: req.body.eventID,
+                    userID: doc._id,
+                    response: "no" 
+                }         
+                invites.insert(invite, function (err, result) {      
+                    if (err) {
+                        res.json({success: false, message: "Invites insert error"})
+                        return
+                    }
+                    res.json({success: true, message: "User invited successfully"})
+                    return
+                })
             })
-        })   
-    });
+
+        })  
+    })
 }
 
