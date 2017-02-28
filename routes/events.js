@@ -53,17 +53,34 @@ exports.response = function(req, res) {
 
 exports.upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
+
         var collection = db.collection('events');
 
         collection.find({email: req.body.email}).toArray(function(err, docs){
-            if(docs.length === 0) {
-                res.json({success: false, message: 'No events found'});
-            } else {
-                var user = docs[0];
-                res.send({success: true, message: 'Retrieved Events', docs})
+            if (err)
+                res.json({success: false, message: 'Error while querying database'})
+            if(docs.length === 0)
+                res.json({success: false, message: 'No events found'})
+           
+            
+            var upcoming = []
+            var past = []
+            var errmessage = '';
+                
+            for (var i = 0; i < docs.length; i++) {
+                var dateEnd = new Date(docs[i].dateEnd);
+                var now = new Date;
+
+                if (now.getTime() < dateEnd.getTime())
+                    upcoming.push (docs[i])
+                else
+                    past.push (docs[i])
             }
-        });
-    });
+            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})
+            
+
+        })
+    })
 }
 
 exports.invite = function (req, res) {
