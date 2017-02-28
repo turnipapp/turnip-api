@@ -4,6 +4,12 @@ var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var valid_token = require('./valid_token');
 
+
+/************************************
+ *
+ *          CREATE
+ *
+*************************************/
 exports.create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
@@ -29,9 +35,23 @@ exports.create = function(req, res) {
     });
 };
 
+/************************************
+ *
+ *          RESPONSE
+ *
+*************************************/
 exports.response = function(req, res) {
   MongoClient.connect(url, function(err, db) {
     var users = db.collection('users');
+    
+    if (req.body.response != "no" 
+        && req.body.response != "yes"
+        && req.body.response != "maybe") {
+        
+        res.json({success: false, message: 'Invalid response'})
+        return
+    }
+    
     users.findOne({_id: req.decoded._id}, function(err) {
       if (err) {
           res.json({success: false, message: 'Users database error'});
@@ -48,9 +68,11 @@ exports.response = function(req, res) {
   });
 }
 
-
-
-
+/************************************
+ *
+ *          UPCOMING
+ *
+*************************************/
 exports.upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
 
@@ -84,6 +106,11 @@ exports.upcoming = function(req, res) {
     })
 }
 
+/************************************
+ *
+ *             INVITE
+ *
+*************************************/
 exports.invite = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) {
@@ -116,15 +143,20 @@ exports.invite = function (req, res) {
                     eventID: req.body.eventID,
                     userID: doc._id,
                     response: "no" 
-                }         
-                invites.insert(invite, function (err, result) {      
-                    if (err) {
-                        res.json({success: false, message: "Invites insert error"})
+                } 
+                var invited = invites.find({eventID: req.body.eventID, userID: doc._id})        
+                if (!invited) {
+                    invites.insert(invite, function (err, result) {      
+                        if (err) {
+                            res.json({success: false, message: "Invites insert error"})
+                            return
+                        }
+                        res.json({success: true, message: "User invited successfully"})
                         return
-                    }
-                    res.json({success: true, message: "User invited successfully"})
-                    return
-                })
+                    })
+                } else {
+                    res.json({success: false, message: "User is already invited"})
+                }
             })
 
         })  
