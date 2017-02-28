@@ -67,3 +67,38 @@ exports.upcoming = function(req, res) {
         });
     });
 }
+
+exports.invite = function (req, res) {
+    MongoClient.connect(url, function (err, db) {
+        if (err)
+            res.json({success: false, message: 'Error inviting user'})
+        
+        var events = db.collection('events');
+        var mongo = require('mongodb'); 
+        var o_id = new mongo.ObjectID(req.body.eventId); 
+
+        events.findOne({_id: o_id}, function (err, doc)  {
+            if (doc){
+                doc.invited
+
+            } else
+                res.json({success: false, message: 'No event found with that ID'})
+        })   
+
+    });
+}
+
+exports.response = function (req, res) {
+    MongoClient.connect(url, function (err, db) {
+        var events = db.collection('events');
+        var users = db.collection('users');
+
+        collection.findOne({eventId: req.body.eventId}, function (err) {
+            if (err) {
+                res.json({success: false, message: "Error responding to event invite"})
+            }
+            res.json({success: true, message: "this hasn't been implemented yet :("})
+        })
+    })
+}
+
