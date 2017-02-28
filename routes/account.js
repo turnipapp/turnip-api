@@ -1,23 +1,20 @@
 var MongoClient = require('mongodb').MongoClient;
+var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
-var crypto      = require('crypto');
-var bcrypt      = require('bcrypt');
-var ObjectId = require('mongodb').ObjectID;
-var saltRounds  = 10;
 var valid_token = require('./valid_token');
 
 // Expects token
 exports.getAccountInfo = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-        var colleciton = db.collection('users');
+        var users = db.collection('users');
 
         var userId = req.decoded._id;
-        colleciton.findOne(ObjectId(userId), function(err, user){
-            res.json({firstName: user.firstName, lastName: user.lastName, email: user.email});
+        users.findOne({"_id": new ObjectID(userId)}, function(err, document){
+            res.json({success: true, firstName: document.firstName, lastName: document.lastName, email: document.email});
         });
     });
-}
+};
 
 // Expects token, firstName, lastName, email, password, new password
 exports.update = function(req, res) {
