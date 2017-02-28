@@ -15,7 +15,6 @@ exports.getAccountInfo = function(req, res) {
         });
     });
 };
-<<<<<<< HEAD
 
 // Expects token, firstName, lastName, email, password, new password
 exports.update = function(req, res) {
