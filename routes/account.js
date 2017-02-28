@@ -10,11 +10,8 @@ exports.getAccountInfo = function(req, res) {
         var users = db.collection('users');
 
         var userId = req.decoded._id;
-        console.log(userId);
-        // res.json({success: true});
         users.findOne({"_id": new ObjectID(userId)}, function(err, document){
-          console.log(document);
-            res.json({firstName: document.firstName, lastName: document.lastName, email: document.email});
+            res.json({success: true, firstName: document.firstName, lastName: document.lastName, email: document.email});
         });
     });
 };
