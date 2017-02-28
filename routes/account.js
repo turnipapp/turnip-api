@@ -32,9 +32,9 @@ exports.update = function(req, res) {
                 } else {
 
                     if(req.hasOwnProperty('newPassword')){
-                        updateWithPassword(req, collection, );
+                        updateWithPassword(req, collection, res);
                     } else {
-                        updateWithoutPassword();
+                        updateWithoutPassword(req, collection, res);
                     }
                 }
             });
@@ -43,7 +43,7 @@ exports.update = function(req, res) {
 }
 
 function updateWithPassword(body, db, res){
-
+    
 }
 
 function updateWithoutPassword(body, db, res){
