@@ -9,6 +9,7 @@ var jwt         = require('jsonwebtoken'); // used to create, sign, and verify t
 // Expects email and password
 exports.login = function(req, res) {
     MongoClient.connect(url, function(err, db) {
+        try {
         var collection = db.collection('users');
 
         collection.find({email: req.body.email}).toArray(function(err, docs){
@@ -37,6 +38,11 @@ exports.login = function(req, res) {
                 });
             }
         });
+        
+        } catch (err) {
+                res.json({success: false, message: 'There was a problem connecting to the database'});
+        }
+
     });
 };
 
