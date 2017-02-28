@@ -76,30 +76,37 @@ exports.upcoming = function(req, res) {
                 else
                     past.push (docs[i])
             }
-            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})
-            
-
+            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})            
         })
     })
 }
 
 exports.invite = function (req, res) {
     MongoClient.connect(url, function (err, db) {
-        if (err)
+        if (err) {
             res.json({success: false, message: 'Error inviting user'})
         
+        }
+        if (!req.body.eventID || !req.decoded._id || ! req.body.userID) {
+            res.json({success: false, message: 'Error inviting user: NE Info'})
+            return;
+        }
         var events = db.collection('events')
-        var invites = db.colleciton('invites')            
+        var invites = db.collection('invites') 
+        
 
         events.findOne({_id: new ObjectID(req.body.eventID), owner: req.decoded._id }, function (err, doc)  {
+
             if (err)
                 res.json({success: false, message: 'Error retrieving event'})
+            
             //TODO: Validate invitee information
             var invite = {
                 owner: req.decoded._id,
                 eventID: req.body.eventID,
-                userID: req.body.email
+                userID: req.body.userID
             }
+            
             invites.insert(invite, function (err, result) {      
                 if (err) {
                     res.json({success: false, message: "Invites insert error"})
