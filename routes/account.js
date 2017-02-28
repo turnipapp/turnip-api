@@ -9,8 +9,8 @@ exports.getAccountInfo = function(req, res) {
         var colleciton = db.collection('users');
 
         var userId = req.decoded._id;
-        colleciton.find(ObjectId(userId)).toArray(function(err, document){
+        colleciton.findOne({"_id": new ObjectID(userId)}, function(err, document){
             res.json({firstName: document.firstName, lastName: document.lastName, email: document.email});
         });
     });
-}
+};
