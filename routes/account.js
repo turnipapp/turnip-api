@@ -19,19 +19,19 @@ exports.getAccountInfo = function(req, res) {
 // Expects token, firstName, lastName, email, password, new password
 exports.update = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-        var collection = db.collection('users');
+        var users = db.collection('users');
 
         var userId = req.decoded._id;
-        collection.findOne(ObjectId(userId), function(err, user) {
+        users.findOne(ObjectId(userId), function(err, user) {
             bcrypt.compare(req.body.password, user.password, function(err, match) {
                 if(!match){
                     res.json({success: false, message: 'Password incorrect'});
                 } else {
 
                     if(req.hasOwnProperty('newPassword')){
-                        updateWithPassword(req, collection, res);
+                        updateWithPassword(req, users, res);
                     } else {
-                        updateWithoutPassword(req, collection, res);
+                        updateWithoutPassword(req, users, res);
                     }
                 }
             });
