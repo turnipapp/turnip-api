@@ -29,17 +29,25 @@ var inviteUser = function (req, res) {
                 return
             }
 
-            //Find User (will add multiple later)
+            //TODO: Allow for inviting an array of users
+            //TODO: Allow for inviting users via username/phonenumber/etc
+            //TODO: Add more info to objects in invites?
+            //TODO: Add notification functionality
             users.findOne({email: req.body.email}, function (err, doc) {
                 if (!doc) {
                     res.json({success: false, message: "No user found with that email"})
                     return
                 }
+
+                
+
                 var invite = {
                     owner: req.decoded._id,
                     eventID: req.body.eventID,
                     userID: doc._id,
-                    response: "no"
+                    response: "no",
+                    update: true,
+                    notification: users.findOne({_id: new ObjectID(req.decoded._id)}).firstName + ' has invited you to the event ' + events.findOne({eventID: req.body.eventID}).title 
                 }
                 var invited = invites.find({eventID: req.body.eventID, userID: doc._id})
                 if (!invited) {

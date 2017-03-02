@@ -13,6 +13,10 @@ var create = function(req, res) {
           if (err) {
               res.json({success: false, message: 'Users database error'});
           }
+          if (!user) {
+              res.json({success: false, message: 'No user found'});
+          }
+          //TODO: Validate request information format
           var events = db.collection('events');
           var myEvent = {
               owner: req.decoded._id,
@@ -106,15 +110,70 @@ var upcoming = function(req, res) {
 }
 
 var past = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+
+        var collection = db.collection('events');
+        collection.find({email: req.decoded.email}).toArray(function(err, docs){
+            if (err) {
+                res.json({success: false, message: 'Error while querying database'});
+                return;
+            }
+            if(docs.length === 0) {
+                res.json({success: false, message: 'No events found'});
+                return;
+            }
+
+            var upcoming = [];
+            var past = [];
+            var errmessage = '';
+
+            for (var i = 0; i < docs.length; i++) {
+                var dateEnd = new Date(docs[i].dateEnd);
+                var now = new Date();
+
+                if (now.getTime() < dateEnd.getTime()) {
+                    upcoming.push (docs[i]);
+                } else {
+                    past.push (docs[i]);
+                }
+            }
+
+            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
+        })
+    })
 
 };
 
+
+//GET events/notify
+var notify = function (req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var invites = db.collection('invites');
+        invites.find({update: true}, function (err, docs) {
+            if (err) {
+                res.json({message: 'Error finding updates'})
+                return;
+            }
+            if (docs.length === 0) {
+                res.json({message: 'No events found'})
+            }
+
+            var notifications = [];
+            for (var i = 0; i < docs.length; i++) {
+                notifications.push (docs[i].notification);
+            }
+
+            res.json({message: 'Retrieved Updates', notifications});
+        })
+    }) 
+}
 
 var functions = {
   response: response,
   create: create,
   past: upcoming,
-  upcoming: upcoming
+  upcoming: upcoming,
+  notify: notify
 };
 
 module.exports = functions;

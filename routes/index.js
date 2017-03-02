@@ -23,6 +23,7 @@ router.post('/auth/signup', auth.signup);
 router.use(auth.verifyToken);
 
 /* Dashboard */
+router.get('/events/notify', events.notify);   //Events with unread notifications
 router.get('/events/past', events.past );
 router.get('/events/upcoming', events.upcoming );
 router.put('/event/response', events.response);
