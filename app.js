@@ -7,10 +7,13 @@ var mongoUrl        = process.env.MONGO_URL || 'mongodb://localhost:27017/rachis
 var mongoSessionUrl = process.env.MONGO_SESSION_URL || 'mongodb://localhost:27017/rachis';
 var port            = process.env.PORT || 5000;
 var logger          = require('morgan');
+var aws             = require('aws-sdk');
 
 // JSON WEB TOKEN
 app.set('superSecret', 'ThIsIsSoSeCrEt'); // secret variable
 
+// AWS S3
+app.engine('html', require('ejs').renderFile);
 
 /* Cors
  * Allows for external services to make API requests

@@ -17,11 +17,13 @@
   },
   "homepage": "https://github.com/turnipapp/turnip-api#readme",
   "dependencies": {
+    "aws-sdk": "2.x",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.16.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
     "crypto": "0.0.3",
+    "ejs": "2.x",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.3.0",
     "mongodb": "^2.2.22",

@@ -9,6 +9,7 @@ var invite      = require('./invite');
 var themes      = require('./themes');
 var user        = require('./user');
 var event       = require('./event');
+var upload      = require('./upload');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -45,5 +46,8 @@ router.get('/account', account.getAccount);
 
 /* Users */
 router.get('/user/:email', user.userByEmail);
+
+/* Upload  (TEST) */
+router.post('/uploadimage', upload.uploadimage);
 
 module.exports = router;
