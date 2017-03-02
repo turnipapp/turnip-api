@@ -3,7 +3,6 @@ var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 
-
 // Creates Event
 // POST /event
 var create = function(req, res) {
@@ -100,7 +99,7 @@ var upcoming = function(req, res) {
                 }
             }
 
-            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
+            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})
         })
     })
 }
