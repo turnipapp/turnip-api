@@ -16,6 +16,16 @@ var create = function(req, res) {
               res.json({success: false, message: 'No user found'});
           }
           //TODO: Validate request information format
+          
+          var date = new Date();
+          var dateStart = new Date(req.body.dateStart);
+          var dateEnd = new Date(req.body.dateEnd);
+
+          if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
+            res.json({success: false, message: 'Invalid date'})
+            return;
+          }
+
           var events = db.collection('events');
           var myEvent = {
               owner: req.decoded._id,
