@@ -1,56 +1,45 @@
 var router      = require('express').Router();
+var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var config      = require('../config'); // get our config file
+
 var auth        = require('./auth');
 var account     = require('./account');
 var events      = require('./events');
-var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var config      = require('../config'); // get our config file
-var server      = require('./valid_token');
+var invite      = require('./invite');
+var themes      = require('./themes');
+var user        = require('./user');
 
 /**********************
  * UNPROTECTED ROUTES *
  **********************/
 
 /* Auth */
-router.post('/auth/login', function(req, res){ auth.login(req, res); } );
-router.post('/auth/signup', function(req, res){ auth.signup(req, res); } );
+router.post('/auth/login', auth.login);
+router.post('/auth/signup', auth.signup);
 
 /********************
  * PROTECTED ROUTES *
  *********************/
- // Note: This is a middleware that confirms that the token being sent is valid
-router.use(function(req, res, next) {
-    // check header or url parameters or post parameters for token
- 	var token = req.header('token');
- 	// decode token
- 	if (token) {
- 		// verifies secret and checks exp
- 		jwt.verify(token, config.secret, function(err, decoded) {
- 			if (err) {
- 				return res.json({ success: false, message: 'Failed to authenticate token.' });
- 			} else {
- 				// if everything is good, save to request for use in other routes
- 				req.decoded = decoded;
- 				next();
- 			}
- 		});
+router.use(auth.verifyToken);
 
- 	} else {
- 		// if there is no token
- 		// return an error
- 		return res.status(403).send({
- 			success: false,
- 			message: 'No token provided.'
- 		});
- 	}
-});
+/* Dashboard */
+router.get('/events/past', events.past );
+router.get('/events/upcoming', events.upcoming );
+router.put('/event/response', events.response);
 
-/* Server Test - Should return 200 */
-router.get('/isValidToken', function(req, res) { server.status(req, res); } );
-router.post('/event', function(req, res) { events.create(req, res); } );
-router.get('/events/upcoming', function(req, res) { events.upcoming(req, res); } );
-router.get('/events/past', function(req, res) { events.upcoming(req, res); } );
-router.put('/events/invite', function (req, res) { events.invite(req, res); } );
-router.put('/events/response', function (req, res) { events.response(req, res); } );
-router.get('/account', function(req, res){ account.getAccountInfo(req, res); } );
+/* Create Event*/
+router.post('/event', events.create );
+router.put('/invite', invite.invite );
+
+/* Events */
+
+/* Themes */
+router.get('/themes', themes.getThemes);
+
+/* Account */
+router.get('/account', account.getAccount);
+
+/* Users */
+router.get('/user/:email', user.userByEmail);
 
 module.exports = router;
