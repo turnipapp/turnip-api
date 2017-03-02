@@ -2,10 +2,10 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
-var valid_token = require('./valid_token');
 
 // Expects token
-exports.getAccountInfo = function(req, res) {
+// GET /account
+var getAccount = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
 
@@ -15,3 +15,9 @@ exports.getAccountInfo = function(req, res) {
         });
     });
 };
+
+var functions = {
+    getAccount: getAccount
+};
+
+module.exports = functions;
