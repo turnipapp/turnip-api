@@ -49,5 +49,6 @@ router.get('/user/:email', user.userByEmail);
 
 /* Upload  (TEST) */
 router.post('/uploadimage', upload.uploadimage);
+router.get('/getimage', upload.getimage);
 
 module.exports = router;

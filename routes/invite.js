@@ -47,7 +47,7 @@ var inviteUser = function (req, res) {
                     userID: doc._id,
                     response: "no",
                     update: true,
-                    notification: users.findOne({_id: new ObjectID(req.decoded._id)}).firstName + ' has invited you to the event ' + events.findOne({eventID: req.body.eventID}).title 
+                    notification: 'You have been invited to a new event!' 
                 }
                 var invited = invites.find({eventID: req.body.eventID, userID: doc._id})
                 if (!invited) {

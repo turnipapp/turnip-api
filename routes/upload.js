@@ -8,17 +8,20 @@ var s3Bucket = new aws.S3({params:{Bucket: 'turnip.com/images'}});
 
 // POST req.body.imageBinary
 var uploadimage = function(req, res) {
-        try {
+        
+    //TODO: Make private images that only buffer for auth
+    try {
         buf = new Buffer(req.body.imageBinary.replace(/^data:image\/\w+;base64,/, ""),'base64')
         var data = {
-            Key: req.body.s3key, 
+            Key: req.body.imageName, 
             Body: buf,
             ContentEncoding: 'base64',
             ContentType: 'image/jpeg'
         };
         s3Bucket.putObject(data, function(err, data){
+            console.log(data);
+            
             if (err) { 
-                console.log(err);
                 res.json({message:'Error uploading data: '}); 
             } else {
                 res.json({message:'Succesfully uploaded the image!'});
@@ -30,7 +33,7 @@ var uploadimage = function(req, res) {
 };
 
 var functions = {
-    uploadimage: uploadimage
+    uploadimage: uploadimage,
 };
 
 module.exports = functions;
