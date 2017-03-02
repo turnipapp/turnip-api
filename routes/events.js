@@ -101,7 +101,7 @@ exports.upcoming = function(req, res) {
                 else
                     past.push (docs[i])
             }
-            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
+            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
         })
     })
 }
@@ -148,7 +148,7 @@ exports.invite = function (req, res) {
                 if (!invited) {
                     invites.insert(invite, function (err, result) {      
                         if (err) {
-                            res.json({success: false, message: "Invites insert error"})
+                            res.json({success: false, message: "Error inserting invite to DB"})
                             return
                         }
                         res.json({success: true, message: "User invited successfully"})
