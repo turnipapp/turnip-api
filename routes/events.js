@@ -99,14 +99,16 @@ var upcoming = function(req, res) {
                     past.push (docs[i]);
                 }
             }
-            res.send({success: true, message: 'Retrieved Events' + errmessage, upcoming: upcoming, past: past});
-        });
-    });
-};
+
+            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
+        })
+    })
+}
 
 var past = function(req, res) {
 
 };
+
 
 var functions = {
   response: response,
