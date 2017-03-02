@@ -8,6 +8,7 @@ var events      = require('./events');
 var invite      = require('./invite');
 var themes      = require('./themes');
 var user        = require('./user');
+var event       = require('./event');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -33,9 +34,11 @@ router.post('/event', events.create );
 router.put('/invite', invite.invite );
 
 /* Events */
+router.get('/event/:id', event.getOne);
 
 /* Themes */
-router.get('/themes', themes.getThemes);
+router.get('/themes', themes.getAll);
+router.get('/themes/:id', themes.getOne);
 
 /* Account */
 router.get('/account', account.getAccount);

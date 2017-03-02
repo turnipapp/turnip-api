@@ -25,12 +25,18 @@ var themes = [
     }
 ];
 
-var getThemes = function(req, res) {
+var getAll = function(req, res) {
     res.json({success: true, themes: themes});
 };
 
+var getOne = function(req, res) {
+    var theme = themes[req.params.id];
+    res.json({success: true, theme: theme});
+};
+
 var functions = {
-    getThemes: getThemes
+    getAll: getAll,
+    getOne: getOne
 };
 
 module.exports = functions;
