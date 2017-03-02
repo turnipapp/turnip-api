@@ -44,6 +44,6 @@ router.get('/themes/:id', themes.getOne);
 router.get('/account', account.getAccount);
 
 /* Users */
-router.get('/user/:email', user.userByEmail);
+router.get('/user/:type/:data', user.getOne);
 
 module.exports = router;
