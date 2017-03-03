@@ -4,7 +4,7 @@ var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var bcrypt      = require('bcrypt');
 var saltRounds  = 10;
-var valid_token = require('./valid_token');
+
 
 // Expects token
 // GET /account
@@ -88,4 +88,3 @@ var functions = {
 };
 
 module.exports = functions;
-
