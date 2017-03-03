@@ -7,7 +7,8 @@ var saltRounds  = 10;
 var valid_token = require('./valid_token');
 
 // Expects token
-exports.getAccountInfo = function(req, res) {
+// GET /account
+var getAccount = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
 
@@ -81,3 +82,10 @@ function encrypt(password, callback) {
         callback(err, hash);
     });
 }
+
+var functions = {
+    getAccount: getAccount
+};
+
+module.exports = functions;
+
