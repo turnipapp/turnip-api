@@ -40,7 +40,7 @@ exports.update = function(req, res) {
             });
         });
     });
-}
+};
 
 function updateWithPassword(body, db, res, userId){
     var users = db.collection('users');
