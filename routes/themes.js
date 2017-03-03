@@ -19,7 +19,7 @@ var themes = [
     },
     {
         id: 3,
-        name: 'Hipster',
+        name: 'Cole',
         small: 'http://i.imgur.com/Sieqnpz.jpg',
         large: 'http://i.imgur.com/oKEfIyO.jpg'
     }
