@@ -60,6 +60,7 @@ var create = function(req, res) {
                 return;
 
           });
+
         });
     });
 };
@@ -103,6 +104,7 @@ var response = function(req, res) {
 var upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
 
+
         var invites = db.collection('invites');
         var events = db.collection('events');
 
@@ -124,7 +126,6 @@ var upcoming = function(req, res) {
 
             events.find({_id: {$in: eventids}}).toArray(function(error, allevents) {
                    for (var x = 0; x < allevents.length; x++) { 
-                        console.log("EVENT: " + allevents[x].title);
                         var dateEnd = new Date(allevents[x].dateEnd);
                         var now = new Date();
 
@@ -159,25 +160,24 @@ var past = function(req, res) {
                 return;
             }
 
-            var upcoming = [];
-            var past = [];
-            var errmessage = '';
+            var events = db.collection('events');
 
-            for (var i = 0; i < docs.length; i++) {
-                var dateEnd = new Date(docs[i].dateEnd);
-                var now = new Date();
-
-                if (now.getTime() < dateEnd.getTime()) {
-                    upcoming.push (docs[i]);
-                } else {
-                    past.push (docs[i]);
+            events.find({"_id": { $in: eventIds}}).toArray(function (err, docs) {
+                if(err) {
+                    res.json({success: false, message: 'Events databse error'});
+                    return;
                 }
-            }
-
-            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
-        })
-    })
-
+                var past = [];
+                var now = new Date();
+                for(var i = 0; i < docs.length; i++) {
+                    if(new Date(docs[i].dateStart) < now) {
+                        past.unshift(docs[i]);
+                    }
+                }
+                res.json({success:true, past: past});
+            });
+        });
+    });
 };
 */
 
@@ -201,12 +201,13 @@ var notify = function (req, res) {
 
             res.json({message: 'Retrieved Updates', notifications});
         })
-    }) 
+    })
 }
 
 var functions = {
   response: response,
   create: create,
+  past: past,
   upcoming: upcoming,
   past: upcoming,
   notify: notify
