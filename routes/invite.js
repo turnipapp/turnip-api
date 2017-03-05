@@ -42,7 +42,7 @@ var inviteUser = function (req, res) {
                 
 
                 var invite = {
-                    owner: req.decoded._id,
+                    owner: new ObjectID(req.decoded._id),
                     eventID: req.body.eventID,
                     userID: doc._id,
                     response: "no",

@@ -28,21 +28,37 @@ var create = function(req, res) {
 
           var events = db.collection('events');
           var myEvent = {
-              owner: req.decoded._id,
+              owner: new ObjectID(req.decoded._id),
               title: req.body.title,
               dateStart: req.body.dateStart,
               dateEnd: req.body.dateEnd,
               location: req.body.location,
-              theme: req.body.theme,
-              userId: user._id
+              theme: req.body.theme
           };
           events.insert(myEvent, function(err, result) {
               if(err) {
                   res.json({success: false, message: 'Events database error'});
               }
               var invites = db.collection('invites');
+              var invite = {
+                    owner: new ObjectID(req.decoded._id),
+                    eventID: result.ops[0]._id,
+                    userID: new ObjectID(req.decoded._id),
+                    response: "yes",
+                    update: true,
+                    notification: null
+              }
+              invites.insert(invite, function (err) {
+                if (err) {
+                    res.json({success: false, message: 'Failed to invite owner'});
+                    return;
+                }
+              })
+              
               // Insert req.body.invites array as separate entries
-              res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id, sex: true});
+                res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
+                return;
+
           });
         });
     });
@@ -87,8 +103,10 @@ var response = function(req, res) {
 var upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
 
-        var collection = db.collection('events');
-        collection.find({email: req.decoded.email}).toArray(function(err, docs){
+        var invites = db.collection('invites');
+        var events = db.collection('events');
+
+        invites.find({userID: new ObjectID(req.decoded._id)}).toArray(function(err, docs){
             if (err) {
                 res.json({success: false, message: 'Error while querying database'});
                 return;
@@ -101,26 +119,35 @@ var upcoming = function(req, res) {
             var upcoming = [];
             var past = [];
             var errmessage = '';
+            
+            var eventids = docs.map(function (doc) {  return new ObjectID(doc.eventID)});
 
-            for (var i = 0; i < docs.length; i++) {
-                var dateEnd = new Date(docs[i].dateEnd);
-                var now = new Date();
+            events.find({_id: {$in: eventids}}).toArray(function(error, allevents) {
+                   for (var x = 0; x < allevents.length; x++) { 
+                        console.log("EVENT: " + allevents[x].title);
+                        var dateEnd = new Date(allevents[x].dateEnd);
+                        var now = new Date();
 
-                if (now.getTime() < dateEnd.getTime()) {
-                    upcoming.push (docs[i]);
-                } else {
-                    past.push (docs[i]);
-                }
-            }
+                        if (now.getTime() < dateEnd.getTime()) {
+                            upcoming.push (allevents[x]);
+                        } else {
+                            past.push (allevents[x]);
+                        }
+                   }
+                  
+                    res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past});
+                
+                    return; 
+            })
 
-            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})
         })
     })
 }
-
+/*
 var past = function(req, res) {
     MongoClient.connect(url, function(err, db) {
 
+        /*
         var collection = db.collection('events');
         collection.find({email: req.decoded.email}).toArray(function(err, docs){
             if (err) {
@@ -152,7 +179,7 @@ var past = function(req, res) {
     })
 
 };
-
+*/
 
 //GET events/notify
 var notify = function (req, res) {
@@ -180,8 +207,8 @@ var notify = function (req, res) {
 var functions = {
   response: response,
   create: create,
-  past: upcoming,
   upcoming: upcoming,
+  past: upcoming,
   notify: notify
 };
 
