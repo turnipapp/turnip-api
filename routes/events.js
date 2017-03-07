@@ -8,42 +8,56 @@ var url         = process.env.MONGO_URL || config.database;
 var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
-        users.findOne({_id: new ObjectID(req.decoded._id)}, function(err, user){
-          if (err) {
-              res.json({success: false, message: 'Users database error'});
-          }
-          if (!user) {
-              res.json({success: false, message: 'No user found'});
-          }
-          //TODO: Validate request information format
-          
-          var date = new Date();
-          var dateStart = new Date(req.body.dateStart);
-          var dateEnd = new Date(req.body.dateEnd);
 
-          if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
-            res.json({success: false, message: 'Invalid date'})
-            return;
-          }
+        var date = new Date();
+        var dateStart = new Date(req.body.dateStart);
+        var dateEnd = new Date(req.body.dateEnd);
 
-          var events = db.collection('events');
-          var myEvent = {
-              owner: req.decoded._id,
-              title: req.body.title,
-              dateStart: req.body.dateStart,
-              dateEnd: req.body.dateEnd,
-              location: req.body.location,
-              theme: req.body.theme,
-              userId: user._id
-          };
-          events.insert(myEvent, function(err, result) {
-              if(err) {
-                  res.json({success: false, message: 'Events database error'});
-              }
-              var invites = db.collection('invites');
-              // Insert req.body.invites array as separate entries
-              res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id, sex: true});
-          });
+        if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
+          res.json({success: false, message: 'Invalid date'});
+          return;
+        }
+
+        var events = db.collection('events');
+        var invitesColl = db.collection('invites');
+
+        var myEvent = {
+            owner: req.decoded._id,
+            title: req.body.title,
+            dateStart: req.body.dateStart,
+            dateEnd: req.body.dateEnd,
+            location: req.body.location,
+            theme: req.body.theme
+        };
+        events.insert(myEvent, function(err, result) {
+            if(err) {
+                res.json({success: false, message: 'Events database error'});
+            }
+
+            var inviteObj = {
+                userId: new ObjectID(req.decoded._id),
+                eventId: result.ops[0]._id,
+                response: 'yes'
+            };
+
+            var invites = [];
+            for (var i = 0; i < req.body.invites.length; i++) {
+                var obj = {
+                    userId: new ObjectID(req.body.invites[i].id),
+                    eventId: result.ops[0]._id,
+                    response: 'no'
+                };
+                invites.push(obj);
+            }
+
+            invites.push(inviteObj);
+
+            invitesColl.insert(invites, function(err, invresult) {
+                if(err) {
+                    res.json({success: false, message: 'Invite database error'});
+                }
+                res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
+            });
         });
     });
 };
@@ -86,71 +100,62 @@ var response = function(req, res) {
 *************************************/
 var upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-
-        var collection = db.collection('events');
-        collection.find({email: req.decoded.email}).toArray(function(err, docs){
-            if (err) {
-                res.json({success: false, message: 'Error while querying database'});
-                return;
-            }
-            if(docs.length === 0) {
-                res.json({success: false, message: 'No events found'});
-                return;
+        var invites = db.collection('invites');
+        invites.find({'userId': req.decoded._id}).toArray(function (err, docs) {
+            var eventIds = [];
+            for(var i = 0; i < docs.length; i++) {
+              var obj = new ObjectID(docs[i].eventId);
+              eventIds.unshift(obj);
             }
 
-            var upcoming = [];
-            var past = [];
-            var errmessage = '';
+            var events = db.collection('events');
 
-            for (var i = 0; i < docs.length; i++) {
-                var dateEnd = new Date(docs[i].dateEnd);
-                var now = new Date();
-
-                if (now.getTime() < dateEnd.getTime()) {
-                    upcoming.push (docs[i]);
-                } else {
-                    past.push (docs[i]);
+            events.find({"_id": { $in: eventIds}}).toArray(function (err, docs) {
+                if(err) {
+                    res.json({success: false, message: 'Events databse error'});
+                    return;
                 }
-            }
-
-            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})
-        })
-    })
-}
+                var upcoming = [];
+                var now = new Date();
+                for(var i = 0; i < docs.length; i++) {
+                    if(new Date(docs[i].dateStart) > now) {
+                        upcoming.unshift(docs[i]);
+                    }
+                }
+                res.json({success:true, upcoming: upcoming});
+            });
+        });
+    });
+};
 
 var past = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-
-        var collection = db.collection('events');
-        collection.find({email: req.decoded.email}).toArray(function(err, docs){
-            if (err) {
-                res.json({success: false, message: 'Error while querying database'});
-                return;
-            }
-            if(docs.length === 0) {
-                res.json({success: false, message: 'No events found'});
-                return;
+        var invites = db.collection('invites');
+        invites.find({'userId': req.decoded._id}).toArray(function (err, docs) {
+            var eventIds = [];
+            for(var i = 0; i < docs.length; i++) {
+              var obj = new ObjectID(docs[i].eventId);
+              eventIds.unshift(obj);
             }
 
-            var upcoming = [];
-            var past = [];
-            var errmessage = '';
+            var events = db.collection('events');
 
-            for (var i = 0; i < docs.length; i++) {
-                var dateEnd = new Date(docs[i].dateEnd);
-                var now = new Date();
-
-                if (now.getTime() < dateEnd.getTime()) {
-                    upcoming.push (docs[i]);
-                } else {
-                    past.push (docs[i]);
+            events.find({"_id": { $in: eventIds}}).toArray(function (err, docs) {
+                if(err) {
+                    res.json({success: false, message: 'Events databse error'});
+                    return;
                 }
-            }
-
-            res.json({success: true, message: 'Retrieved Events' + errmessage, upcoming, past})           
-        })
-    })
-
+                var past = [];
+                var now = new Date();
+                for(var i = 0; i < docs.length; i++) {
+                    if(new Date(docs[i].dateStart) < now) {
+                        past.unshift(docs[i]);
+                    }
+                }
+                res.json({success:true, past: past});
+            });
+        });
+    });
 };
 
 
@@ -174,13 +179,13 @@ var notify = function (req, res) {
 
             res.json({message: 'Retrieved Updates', notifications});
         })
-    }) 
+    })
 }
 
 var functions = {
   response: response,
   create: create,
-  past: upcoming,
+  past: past,
   upcoming: upcoming,
   notify: notify
 };

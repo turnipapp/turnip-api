@@ -3,6 +3,7 @@ var jwt         = require('jsonwebtoken'); // used to create, sign, and verify t
 var config      = require('../config'); // get our config file
 
 var auth        = require('./auth');
+var account 	= require('./account');
 var account     = require('./account');
 var events      = require('./events');
 var invite      = require('./invite');
@@ -10,6 +11,7 @@ var themes      = require('./themes');
 var user        = require('./user');
 var event       = require('./event');
 var upload      = require('./upload');
+var posts       = require('./posts');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -22,6 +24,7 @@ router.post('/auth/signup', auth.signup);
 /********************
  * PROTECTED ROUTES *
  *********************/
+
 router.use(auth.verifyToken);
 
 /* Dashboard */
@@ -36,6 +39,8 @@ router.put('/invite', invite.invite );
 
 /* Events */
 router.get('/event/:id', event.getOne);
+router.get('/posts/:id', posts.getAll);
+router.post('/posts/:id', posts.create);
 
 /* Themes */
 router.get('/themes', themes.getAll);
@@ -45,7 +50,8 @@ router.get('/themes/:id', themes.getOne);
 router.get('/account', account.getAccount);
 
 /* Users */
-router.get('/user/:email', user.userByEmail);
+router.get('/user/:type/:data', user.getOne);
+
 
 /* Upload  (TEST) */
 router.post('/uploadimage', upload.uploadimage);
