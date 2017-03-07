@@ -28,7 +28,7 @@ var create = function(req, res) {
 
         var postObj = {
             text: req.body.text,
-            userId: req.decoded._id,
+            userId: new ObjectID(req.decoded._id),
             eventId: req.params.id,
             timestamp: new Date()
         };
