@@ -4,7 +4,7 @@ var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var aws         = require('aws-sdk');
 aws.config.loadFromPath('./s3_config.json');
-var s3Bucket = new aws.S3({params:{Bucket: 'turnip.com/images'}});
+var s3Bucket = new aws.S3({params:{Bucket: 'turnip.com/imagess'}});
 
 // POST req.body.imageBinary
 var uploadimage = function(req, res) {
@@ -27,9 +27,9 @@ var uploadimage = function(req, res) {
                 res.json({message:'Succesfully uploaded the image!'});
             }
         });
-        }catch (err) {
+    }catch (err) {
             res.json({message:'Error'});
-        }
+    }
 };
 
 var functions = {

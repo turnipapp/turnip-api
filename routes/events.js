@@ -22,7 +22,7 @@ var create = function(req, res) {
         var invitesColl = db.collection('invites');
 
         var myEvent = {
-            owner: req.decoded._id,
+            owner: new ObjectID(req.decoded._id),
             title: req.body.title,
             dateStart: req.body.dateStart,
             dateEnd: req.body.dateEnd,
@@ -77,12 +77,12 @@ var response = function(req, res) {
         return;
     }
 
-    users.findOne({_id: req.decoded._id}, function(err) {
+    users.findOne({_id: new ObjectID(req.decoded._id)}, function(err) {
       if (err) {
           res.json({success: false, message: 'Users database error'});
       }
       var invites = db.collection('invites');
-      invites.findOne({eventID: req.body.eventID, userID: req.decoded._id}, function(err, invite) {
+      invites.findOne({eventID: req.body.eventID, userID: new ObjectID(req.decoded._id)}, function(err, invite) {
         if (err) {
           res.json({success: false, message: 'Invites database error'});
         }
@@ -101,7 +101,7 @@ var response = function(req, res) {
 var upcoming = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
-        invites.find({'userId': req.decoded._id}).toArray(function (err, docs) {
+        invites.find({'userId': new ObjectID(req.decoded._id)}).toArray(function (err, docs) {
             var eventIds = [];
             for(var i = 0; i < docs.length; i++) {
               var obj = new ObjectID(docs[i].eventId);
@@ -131,7 +131,7 @@ var upcoming = function(req, res) {
 var past = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
-        invites.find({'userId': req.decoded._id}).toArray(function (err, docs) {
+        invites.find({'userId': new ObjectID(req.decoded._id)}).toArray(function (err, docs) {
             var eventIds = [];
             for(var i = 0; i < docs.length; i++) {
               var obj = new ObjectID(docs[i].eventId);

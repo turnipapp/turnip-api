@@ -55,6 +55,5 @@ router.get('/user/:type/:data', user.getOne);
 
 /* Upload  (TEST) */
 router.post('/uploadimage', upload.uploadimage);
-router.get('/getimage', upload.getimage);
 
 module.exports = router;
