@@ -4,7 +4,6 @@ var config      = require('../config'); // get our config file
 
 var auth        = require('./auth');
 var account 	= require('./account');
-var account     = require('./account');
 var events      = require('./events');
 var invite      = require('./invite');
 var themes      = require('./themes');
@@ -48,6 +47,7 @@ router.get('/themes/:id', themes.getOne);
 
 /* Account */
 router.get('/account', account.getAccount);
+router.post('/account/update', account.update);
 
 /* Users */
 router.get('/user/:type/:data', user.getOne);

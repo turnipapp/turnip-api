@@ -20,7 +20,7 @@ var getAccount = function(req, res) {
 };
 
 // Expects token, firstName, lastName, email, password, new password
-exports.update = function(req, res) {
+var update = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
 
@@ -84,7 +84,8 @@ function encrypt(password, callback) {
 }
 
 var functions = {
-    getAccount: getAccount
+    getAccount: getAccount,
+    update: update
 };
 
 module.exports = functions;
