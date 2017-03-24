@@ -70,10 +70,10 @@ function updateWithoutPassword(body, db, res, userId){
         lastName: body.lastName
     }}, function(err, result) {
         if(err) {
-                res.json({success: false, message: 'Database error'});
-            }
+            res.json({success: false, message: 'Database error'});
+        }
 
-            res.json({success: true, message: 'Successfully updated account info.'});
+        res.json({success: true, message: 'Successfully updated account info.'});
     });
 }
 

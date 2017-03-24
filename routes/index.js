@@ -38,9 +38,9 @@ router.put('/invite', invite.invite );
 
 /* Events */
 router.get('/event/:id', event.getOne);
-router.get('/posts/:id', posts.getAll);
+router.get('/posts/:id', pjosts.getAll);
 router.post('/posts/:id', posts.create);
-router.post('/posts/:id', posts.edit);
+router.put('/posts/:id', posts.edit);
 
 /* Themes */
 router.get('/themes', themes.getAll);
