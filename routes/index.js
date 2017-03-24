@@ -38,7 +38,7 @@ router.put('/invite', invite.invite );
 
 /* Events */
 router.get('/event/:id', event.getOne);
-router.get('/posts/:id', pjosts.getAll);
+router.get('/posts/:id', posts.getAll);
 router.post('/posts/:id', posts.create);
 router.put('/posts/:id', posts.edit);
 
