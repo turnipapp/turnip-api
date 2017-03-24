@@ -40,6 +40,7 @@ router.put('/invite', invite.invite );
 router.get('/event/:id', event.getOne);
 router.get('/posts/:id', posts.getAll);
 router.post('/posts/:id', posts.create);
+router.post('/posts/:id', posts.edit);
 
 /* Themes */
 router.get('/themes', themes.getAll);

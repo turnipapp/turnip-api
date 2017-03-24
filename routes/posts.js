@@ -39,9 +39,14 @@ var create = function(req, res) {
     });
 };
 
+var edit = function(req, res) {
+
+};
+
 var functions = {
     getAll: getAll,
-    create: create
+    create: create,
+    edit: edit
 };
 
 function sortByKey(array, key) {
