@@ -1,0 +1,41 @@
+[
+    {
+      "id": 0,
+      "name": "Google Maps",
+      "icon": {
+        "class": "fa-google",
+        "color": "#4285F4"
+      },
+      "description": "Show event guests a quick map to the location.",
+      "url": "/map",
+      "status": "available",
+      "ref": ".maps({id: id})",
+      "appState": "map"
+    },
+    {
+      "id": 1,
+      "name": "Spotify",
+      "icon": {
+        "class": "fa-spotify",
+        "color": "#4ED567"
+      },
+      "description": "Let guests add songs to a spotify playlist.",
+      "url": "/spotify",
+      "status": "available",
+      "ref": ".spotify({id: id})",
+      "appState": "spotify"
+    },
+    {
+      "id": 2,
+      "name": "Venmo",
+      "icon": {
+        "class": "fa-credit-card",
+        "color": "#3D95CE"
+      },
+      "description": "Allow guests to pay to attend the event.",
+      "url": "/venmo",
+      "status": "available",
+      "ref": ".venmo({id: id})",
+      "appState": "venmo"
+    }
+]
