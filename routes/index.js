@@ -38,6 +38,11 @@ router.put('/invite', invite.invite );
 
 /* Events */
 router.get('/event/:id', event.getOne);
+router.get('/event/:id/apps', event.getAllApps);
+router.post('/event/:id/apps', event.addOneApp);
+router.delete('/event/:id/apps/:appId', event.deleteOneApp);
+router.get('/event/:id/role', event.getRole);
+router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
 router.post('/posts/:id', posts.create);
 
