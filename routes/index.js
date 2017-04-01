@@ -39,9 +39,11 @@ router.put('/invite', invite.invite );
 /* Events */
 router.get('/event/:id', event.getOne);
 router.get('/posts/:id', posts.getAll);
+
+/* Posts */
 router.post('/posts/:id', posts.create);
 router.put('/posts/:id', posts.edit);
-
+// POST turnip.com/posts/3rhjgworibip {post content}
 /* Themes */
 router.get('/themes', themes.getAll);
 router.get('/themes/:id', themes.getOne);

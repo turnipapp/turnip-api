@@ -22,6 +22,7 @@ var getAll = function(req, res) {
         // });
     });
 };
+
 var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
