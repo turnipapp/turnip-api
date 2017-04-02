@@ -30,7 +30,7 @@ var create = function(req, res) {
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
-            eventId: req.params.id,
+            eventId: req.body.id,
             timestamp: new Date()
         };
 
@@ -44,7 +44,7 @@ var edit = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
 
-        posts.update({"_id": new ObjectID(req.params.id)}, {$set: {
+        posts.update({"_id": new ObjectID(req.body.id)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
             if(err) {
@@ -60,7 +60,7 @@ var edit = function(req, res) {
 var functions = {
     getAll: getAll,
     create: create,
-    edit: edit
+    edit: edit,
 };
 
 function sortByKey(array, key) {

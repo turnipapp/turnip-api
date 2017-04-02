@@ -41,11 +41,13 @@ router.get('/event/:id', event.getOne);
 router.get('/posts/:id', posts.getAll);
 
 /* Posts */
-router.post('/posts/:id', posts.create);
-router.put('/posts/:id', posts.edit);
+router.post('/posts/create', posts.create);
+router.post('/posts/edit', posts.edit);
+
+
 // POST turnip.com/posts/3rhjgworibip {post content}
-/* Themes */
-router.get('/themes', themes.getAll);
+/* Themes *
+router.get('/themes', themes.getAll)
 router.get('/themes/:id', themes.getOne);
 
 /* Account */
