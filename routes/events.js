@@ -57,8 +57,14 @@ var create = function(req, res) {
                     res.json({success: false, message: 'Invite database error'});
                 }
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
+                for(var i = 1; i < invresult.ops.length; i++) {
+                  var url = "http://www.turnip.com/invite/" + invresult.ops[i]._id;
+                  console.log(url);
+                }
             });
+
         });
+
     });
 };
 

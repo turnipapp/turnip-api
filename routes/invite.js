@@ -39,7 +39,7 @@ var inviteUser = function (req, res) {
                     return
                 }
 
-                
+
 
                 var invite = {
                     owner: req.decoded._id,
@@ -47,7 +47,7 @@ var inviteUser = function (req, res) {
                     userID: doc._id,
                     response: "no",
                     update: true,
-                    notification: 'You have been invited to a new event!' 
+                    notification: 'You have been invited to a new event!'
                 }
                 var invited = invites.find({eventID: req.body.eventID, userID: doc._id})
                 if (!invited) {
@@ -68,8 +68,13 @@ var inviteUser = function (req, res) {
     })
 }
 
+var changeStatus = function(req, res) {
+
+}
+
 var functions = {
-    invite: inviteUser
+    invite: inviteUser,
+    changeStatus: changeStatus
 };
 
 module.exports = functions;
