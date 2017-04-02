@@ -43,6 +43,7 @@ router.get('/posts/:id', posts.getAll);
 /* Posts */
 router.post('/posts/create', posts.create);
 router.post('/posts/edit', posts.edit);
+router.post('/posts/delete', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}

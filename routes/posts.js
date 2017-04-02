@@ -57,10 +57,25 @@ var edit = function(req, res) {
     });
 };
 
+var delete_post = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+
+        posts.remove({_id: ObjectID(req.body.id)}, function(err, result) {
+            if(err) {
+                res.json({success: false, message: 'Database error.'});
+            }
+
+            res.json({success: true, message: 'Successfully deleted post.'});
+        });
+    });
+};
+
 var functions = {
     getAll: getAll,
     create: create,
     edit: edit,
+    delete: delete_post
 };
 
 function sortByKey(array, key) {
