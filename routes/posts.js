@@ -44,11 +44,11 @@ var edit = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
 
-        posts.update({"_id": new ObjectID(req.body.id)}, {$set: {
+        posts.update({"_id": new ObjectID(req.body.postID)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
             if(err) {
-                res.json({success: false, message: 'Database error'});
+                res.json({success: false, message: 'Database error.'});
             }
 
             res.json({success: true, message: 'Successfully edited post.'});
@@ -61,7 +61,7 @@ var delete_post = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
 
-        posts.remove({_id: ObjectID(req.body.id)}, function(err, result) {
+        posts.remove({_id: ObjectID(req.body.postID)}, function(err, result) {
             if(err) {
                 res.json({success: false, message: 'Database error.'});
             }

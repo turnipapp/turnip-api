@@ -41,9 +41,9 @@ router.get('/event/:id', event.getOne);
 router.get('/posts/:id', posts.getAll);
 
 /* Posts */
-router.post('/posts/create', posts.create);
+router.post('/posts/:id', posts.create);
 router.put('/posts/:id', posts.edit);
-router.delete('/posts/delete', posts.delete);
+router.delete('/posts/:id', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
