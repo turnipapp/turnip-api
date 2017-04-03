@@ -22,6 +22,7 @@ var getAll = function(req, res) {
         // });
     });
 };
+
 var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
@@ -29,7 +30,7 @@ var create = function(req, res) {
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
-            eventId: req.params.id,
+            eventId: req.body.id,
             timestamp: new Date()
         };
 
@@ -39,9 +40,42 @@ var create = function(req, res) {
     });
 };
 
+var edit = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+
+        posts.update({"_id": new ObjectID(req.body.postID)}, {$set: {
+            text: req.body.text
+        }}, function(err, result) {
+            if(err) {
+                res.json({success: false, message: 'Database error.'});
+            }
+
+            res.json({success: true, message: 'Successfully edited post.'});
+
+        });
+    });
+};
+
+var delete_post = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+
+        posts.remove({_id: ObjectID(req.body.postID)}, function(err, result) {
+            if(err) {
+                res.json({success: false, message: 'Database error.'});
+            }
+
+            res.json({success: true, message: 'Successfully deleted post.'});
+        });
+    });
+};
+
 var functions = {
     getAll: getAll,
-    create: create
+    create: create,
+    edit: edit,
+    delete: delete_post
 };
 
 function sortByKey(array, key) {

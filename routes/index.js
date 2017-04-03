@@ -45,10 +45,16 @@ router.delete('/event/:id/apps/:appId', event.deleteOneApp);
 router.get('/event/:id/role', event.getRole);
 router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
-router.post('/posts/:id', posts.create);
 
-/* Themes */
-router.get('/themes', themes.getAll);
+/* Posts */
+router.post('/posts/:id', posts.create);
+router.put('/posts/:id', posts.edit);
+router.delete('/posts/:id', posts.delete);
+
+
+// POST turnip.com/posts/3rhjgworibip {post content}
+/* Themes *
+router.get('/themes', themes.getAll)
 router.get('/themes/:id', themes.getOne);
 
 /* Account */
