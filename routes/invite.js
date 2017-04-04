@@ -89,10 +89,16 @@ var changeStatus = function(req, res) {
       if (!invite) {
         res.json({success: false, message: "Invalid invite URL"});
       } else {
-        console.log("invite found!");
-        console.log("previous invite status: " + invite.response);
-        invite.response = req.body.inviteResponse;
-        console.log("updated invite status: " +invite.response);
+        if (req.body.inviteResponse != "yes" && req.body.inviteResponse != "no" && req.body.inviteResponse != "maybe") {
+          res.json({success: false, message: "Invite status must be \'yes\', \'no\', or \'maybe\'."});
+        } else{
+          console.log("invite found!");
+          console.log("previous invite status: " + invite.response);
+          console.log("new invite status: " + req.body.inviteResponse);
+          invites.update({_id: new ObjectID(req.params.id)}, {$set: {response: req.body.inviteResponse}});
+          res.json({success: true, message: "Invite status updated successfully"});
+        }
+
       }
     });
   });
