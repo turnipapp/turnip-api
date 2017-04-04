@@ -53,7 +53,7 @@ router.delete('/posts/:id', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
-/* Themes *
+/* Themes */
 router.get('/themes', themes.getAll)
 router.get('/themes/:id', themes.getOne);
 
