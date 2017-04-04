@@ -34,10 +34,20 @@ var create = function(req, res) {
                 res.json({success: false, message: 'Events database error'});
             }
 
+            var notifications = [];
+            var notification = {
+                type: 1,
+                seen: false,
+                message: 'You have been invited to a new event!',
+                timestamp: new Date.now()
+            }
+            notifications.push(notification);
+
             var inviteObj = {
                 userId: new ObjectID(req.decoded._id),
                 eventId: result.ops[0]._id,
-                response: 'yes'
+                response: 'yes',
+                notifications: notifications
             };
 
             var invites = [];
@@ -45,7 +55,8 @@ var create = function(req, res) {
                 var obj = {
                     userId: new ObjectID(req.body.invites[i].id),
                     eventId: result.ops[0]._id,
-                    response: 'no'
+                    response: 'no',
+                    notifications: notifications
                 };
                 invites.push(obj);
             }
@@ -163,7 +174,6 @@ var past = function(req, res) {
         });
     });
 };
-
 
 //GET events/notify
 var notify = function (req, res) {
