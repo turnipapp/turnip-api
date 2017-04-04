@@ -196,13 +196,23 @@ var deleteApp = function(req, res) {
     });
 };
 
+var getLocation = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var events = db.collection('events');
+
+        
+        
+    });
+};
+
 var functions = {
     getOne: getOne,
     getRole: getRole,
     getTabs: getTabs,
     getAllApps: getApps,
     addOneApp: addApp,
-    deleteOneApp: deleteApp
+    deleteOneApp: deleteApp,
+    getLocation: getLocation
 };
 
 module.exports = functions;
