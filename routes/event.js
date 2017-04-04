@@ -196,13 +196,28 @@ var deleteApp = function(req, res) {
     });
 };
 
+var getLocation = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var events = db.collection('events');
+
+        events.findOne({"_id": new ObjectID(req.params.id)}, function(err, event) {
+            if(err) {
+                res.json({success: false, message: "Database error."});
+            }
+
+            res.json({location: event.location});
+        });      
+    });
+};
+
 var functions = {
     getOne: getOne,
     getRole: getRole,
     getTabs: getTabs,
     getAllApps: getApps,
     addOneApp: addApp,
-    deleteOneApp: deleteApp
+    deleteOneApp: deleteApp,
+    getLocation: getLocation
 };
 
 module.exports = functions;
