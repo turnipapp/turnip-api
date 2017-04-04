@@ -35,7 +35,7 @@ router.put('/event/response', events.response);
 /* Create Event*/
 router.post('/event', events.create );
 router.put('/invite', invite.invite );
-router.post('/invite/:id', invite.changeStatus );
+router.put('/invite/:id', invite.changeStatus );
 
 /* Events */
 router.get('/event/:id', event.getOne);
