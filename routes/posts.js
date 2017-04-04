@@ -30,10 +30,44 @@ var create = function(req, res) {
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
-            eventId: req.body.id,
+            eventId: req.body.eventId,
             timestamp: new Date()
         };
 
+        /*
+          Notifies all invited users (given their preferences) of new post
+        */
+        var message = 'A user has posted in the event: ' + req.body.id;
+        var notification = {
+            type: 4,
+            seen: false,
+            message: message,
+            timestamp: new Date()
+        }
+        var invites = db.collection('invites');
+        invites.update({"eventId": req.body.id}, { $push: {notifications: notification}});
+
+        /*
+        invites.find({"eventId": {$in : req.body.id}}).toArray( function (err, docs) {
+            if (err) {
+              res.json({success: false, message: 'Error updating user notifications'});
+              return;
+            }
+
+            var message = 'A user has posted in the event: ' + req.body.id;
+
+            var notification = {
+                type: 4,
+                seen: false,
+                message: message,
+                timestamp: new Date.now()
+            }
+
+            for (var i = 0; i < docs.length; i++) {
+                docs[i].notifications.push(obj)
+            }
+        });
+        */
         posts.insert(postObj, function(err, result) {
             res.json({success: true});
         });
