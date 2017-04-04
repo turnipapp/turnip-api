@@ -69,16 +69,19 @@ var inviteUser = function (req, res) {
 }
 
 var changeStatus = function(req, res) {
+
   MongoClient.connect(url, function(err, db){
     var invites = db.collection('invites');
 
-    console.log("url test!");
-    invites.findOne({_id: req.params.id}, function(err, invite) {
+    invites.findOne({_id: new ObjectID(req.params.id)}, function(err, invite) {
       if (!invite) {
         res.json({success: false, message: "Invalid invite URL"});
+      } else {
+        console.log("invite found!");
+        console.log("previous invite status: " + invite.response);
+        invite.response = req.body.inviteResponse;
+        console.log("updated invite status: " +invite.response);
       }
-      console.log("invite found!");
-      invite.response = req.body.inviteResponse;
     });
   });
 }
