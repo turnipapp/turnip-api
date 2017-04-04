@@ -39,7 +39,17 @@ var inviteUser = function (req, res) {
                     return
                 }
 
-
+                /*
+                  Creates invite notification for invited users
+                */
+                var notifications = [];
+                var notification = {
+                    type: 1,
+                    seen: false,
+                    message: 'You have been invited to a new event!',
+                    timestamp: new Date.now()
+                }
+                notifications.push(notification);
 
                 var invite = {
                     owner: req.decoded._id,
@@ -47,8 +57,9 @@ var inviteUser = function (req, res) {
                     userID: doc._id,
                     response: "no",
                     update: true,
-                    notification: 'You have been invited to a new event!'
+                    notifications: notifications
                 }
+
                 var invited = invites.find({eventID: req.body.eventID, userID: doc._id})
                 if (!invited) {
                     invites.insert(invite, function (err, result) {
@@ -56,6 +67,7 @@ var inviteUser = function (req, res) {
                             res.json({success: false, message: "Invites insert error"})
                             return
                         }
+
                         res.json({success: true, message: "User invited successfully"})
                         return
                     })
