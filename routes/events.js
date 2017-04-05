@@ -76,8 +76,12 @@ var create = function(req, res) {
                   if(err) {
                     res.json({success: false, message: 'User database error'});
                   } else {
+                    if (isNaN(user.eventsInvited)) {
+                      user.eventsInvited = 0;
+                    }
                     var newEventsInvited = user.eventsInvited + 1;
-                    users.update({_id: new ObjectID(req.body.invites[i].id)}, {$set: {eventsInvited: newEventsInvited}});
+                    console.log(newEventsInvited);
+                    users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
                   }
                 });
                 invites.push(obj);
@@ -90,7 +94,7 @@ var create = function(req, res) {
                     res.json({success: false, message: 'Invite database error'});
                 }
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
-                for(var i = 1; i < invresult.ops.length; i++) {
+                for(var i = 0; i < invresult.ops.length; i++) {
                   var url = "http://www.turnip.com/invite/" + invresult.ops[i]._id;
                   console.log(url);
                   var users = db.collection('users');
