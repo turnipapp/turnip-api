@@ -61,6 +61,7 @@ var create = function(req, res) {
                 notifications: notifications
             };
 
+            console.log(req.body.invites);
             var invites = [];
             for (var i = 0; i < req.body.invites.length; i++) {
                 var obj = {
@@ -69,6 +70,16 @@ var create = function(req, res) {
                     response: 'no',
                     notifications: notifications
                 };
+
+                //Updates the number of events a user has been invited to.
+                users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
+                  if(err) {
+                    res.json({success: false, message: 'User database error'});
+                  } else {
+                    var newEventsInvited = user.eventsInvited + 1;
+                    users.update({_id: new ObjectID(req.body.invites[i].id)}, {$set: {eventsInvited: newEventsInvited}});
+                  }
+                });
                 invites.push(obj);
             }
 
@@ -81,6 +92,7 @@ var create = function(req, res) {
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
                 for(var i = 1; i < invresult.ops.length; i++) {
                   var url = "http://www.turnip.com/invite/" + invresult.ops[i]._id;
+                  console.log(url);
                   var users = db.collection('users');
 
                   users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
@@ -98,7 +110,7 @@ var create = function(req, res) {
                         console.log("message %s sent: %s", info.messageId, info.response);
                       }
                     });
-                    console.log(url);
+
                   });
 
                 }

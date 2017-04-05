@@ -96,7 +96,9 @@ function allowSignup(body, db, res) {
             email: body.email,
             firstName: body.firstName,
             lastName: body.lastName,
-            password: hash
+            password: hash,
+            eventsInvited: 0,
+            eventsAttended: 0
         };
         collection.insert(user, function(err, result) {
             if(err) {
