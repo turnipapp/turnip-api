@@ -85,7 +85,7 @@ var create = function(req, res) {
 
                   users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
                     var email = user.email;
-                    let mailOptions = {
+                    var mailOptions = {
                       from: '"Turnip Events" <turnipinvites@gmail.com>',
                       to: email,
                       subject: "You've been invited to an event on Turnip!",
