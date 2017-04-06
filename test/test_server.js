@@ -12,6 +12,8 @@ chai.use(chaiHttp);
  * To run all test go to the /turnip-api/ folder and run 'npm test'
  */
 
+
+
 describe('Register User', function() {
     it('should add user TESTING SERVER to the user database on /auth/signup POST', function(done) {
         chai.request('http://localhost:5000')
