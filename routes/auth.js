@@ -51,7 +51,11 @@ var login = function(req, res) {
 var signup = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var collection = db.collection('users');
-
+        if (!req.body.email || !req.body.password || !req.body.firstName
+            || !req.body.lastName) {
+            res.json({success: false, message: 'Insufficient signup information'});
+            return;
+        }
         collection.find({email: req.body.email}).toArray(function(err, docs){
             // TODO: Add Check that contents exist
             if(docs.length === 0) {
