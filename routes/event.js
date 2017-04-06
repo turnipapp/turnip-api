@@ -206,7 +206,31 @@ var getLocation = function(req, res) {
             }
 
             res.json({location: event.location});
-        });      
+        });
+    });
+};
+
+var deleteOne = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var events = db.collection('events');
+
+        events.findOne({"_id": new ObjectID(req.params.id)}, function(err, event) {
+            if(err) {
+                res.json({success: false, message: "Database error."});
+            }
+
+            if(req.decoded._id.toString() === event.owner.toString()) {
+                events.remove({"_id": event._id}, function(err, status) {
+                    if (err) {
+                        res.json({success: false, message: 'Error removing event'});
+                    }
+
+                    res.json({success: true});
+                });
+            } else {
+                res.json({success: false, message: 'Invalid permissions'});
+            }
+        });
     });
 };
 
@@ -217,7 +241,8 @@ var functions = {
     getAllApps: getApps,
     addOneApp: addApp,
     deleteOneApp: deleteApp,
-    getLocation: getLocation
+    getLocation: getLocation,
+    deleteOne: deleteOne
 };
 
 module.exports = functions;

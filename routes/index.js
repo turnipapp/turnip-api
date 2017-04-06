@@ -46,6 +46,7 @@ router.get('/event/:id/role', event.getRole);
 router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
 router.get('/event/:id/getLocation', event.getLocation);
+router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
