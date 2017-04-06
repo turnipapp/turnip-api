@@ -99,13 +99,15 @@ var create = function(req, res) {
                   console.log(url);
                   var users = db.collection('users');
 
+                  var message = "You'be been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+
                   users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
                     var email = user.email;
                     var mailOptions = {
                       from: '"Turnip Events" <turnipinvites@gmail.com>',
                       to: email,
                       subject: "You've been invited to an event on Turnip!",
-                      text: "You'be been invited to an event on Turnip!\n Follow the link to RSVP: " + url
+                      text: message
                     }
                     transporter.sendMail(mailOptions, (error, info) => {
                       if (error) {
