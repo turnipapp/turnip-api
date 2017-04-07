@@ -22,6 +22,8 @@ router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
 router.put('/invite/:id', invite.changeStatus );
 
+router.get('/invite/:id', invite.getEventInfo);
+
 /********************
  * PROTECTED ROUTES *
  *********************/
@@ -32,7 +34,7 @@ router.use(auth.verifyToken);
 router.get('/events/notify', events.notify);   //Events with unread notifications
 router.get('/events/past', events.past );
 router.get('/events/upcoming', events.upcoming );
-router.get('/events/info', events.info);
+router.get('/events/info/:eventId', events.info);
 router.put('/event/response', events.response);
 
 /* Create Event*/
@@ -52,8 +54,8 @@ router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
-router.put('/posts/:id', posts.edit);
-router.delete('/posts/:id', posts.delete);
+router.put('/posts/:post_id', posts.edit);
+router.delete('/posts/:post_id', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
