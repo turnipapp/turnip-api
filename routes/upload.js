@@ -14,8 +14,13 @@ var upload = multer({dest: 'tempfiles/'}).single('name');
 var uploadimage = function(req, res) {
             //TODO: Make private images that only buffer for auth
     try {
-        upload (req, res,  function(req,res) {
-            console.log(req);
+        if (!fs.existsSync('tempfiles/')){
+                fs.mkdirSync('tempfiles/');
+        }
+        upload ();
+        
+            /* {
+
             /*            fs.readFile(req.file.image.path, function (err, data) {
                 var dirname = 'tempfiles/'
                 var newPath = dirname + req.body.filename;
@@ -44,8 +49,8 @@ var uploadimage = function(req, res) {
             } else {
                 res.json({message:'Succesfully uploaded the image!'});
             }
-        });*/
-        });
+        });*//*
+        };*/
     }catch (err) {
         res.json({message: '' + err});
     }
