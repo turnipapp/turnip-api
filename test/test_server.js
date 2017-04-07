@@ -3,7 +3,7 @@ var chaiHttp = require('chai-http');
 var server = require('../app');
 var should = chai.should();
 var supertest = require('supertest');
-var server = supertest.agent("http://localhost:5000");
+var server = supertest.agent('http://localhost:5000');
 
 /**
  * This is where you write your tests. Make sure you follow the structure of the 'Register User' test. 
@@ -22,9 +22,9 @@ describe('Register User', function() {
     
     it('should add user TESTING SERVER to the user database on /auth/signup POST', function(done) {
         server
-        .post("/auth/signup")
-        .send({email: "testing@server.com", firstName: "TESTING", lastName: "SERVER", password: "password"})
-        .expect("Content-type", /json/)
+        .post('/auth/signup')
+        .send({email: 'testing@server.com', firstName: 'TESTING', lastName: 'SERVER', password: 'password'})
+        .expect('Content-type', /json/)
         .expect(200)
         .end(function(err, res) {
             res.status.should.equal(200);
@@ -35,9 +35,9 @@ describe('Register User', function() {
 
     it('should not log user in because of a wrong password on /auth/login POST', function(done) {
         server
-        .post("/auth/login")
-        .send({email: "testing@server.com", password: "notcorrect"})
-        .expect("Content-type", /json/)
+        .post('/auth/login')
+        .send({email: 'testing@server.com', password: 'notcorrect'})
+        .expect('Content-type', /json/)
         .expect(200)
         .end(function(err, res) {
             res.status.should.equal(200);
@@ -48,9 +48,9 @@ describe('Register User', function() {
 
     it('should not log user in because of a wrong email on /auth/login POST', function(done) {
         server
-        .post("/auth/login")
-        .send({email: "noemail", password: "password"})
-        .expect("Content-type", /json/)
+        .post('/auth/login')
+        .send({email: 'noemail', password: 'password'})
+        .expect('Content-type', /json/)
         .expect(200)
         .end(function(err, res) {
             res.status.should.equal(200);
@@ -61,14 +61,14 @@ describe('Register User', function() {
 
     it('should log user TESTING SERVER in and return success: true and a token on /auth/login POST', function(done) {
         server
-        .post("/auth/login")
-        .send({email: "testing@server.com", password: "password"})
-        .expect("Content-type", /json/)
+        .post('/auth/login')
+        .send({email: 'testing@server.com', password: 'password'})
+        .expect('Content-type', /json/)
         .expect(200)
         .end(function(err, res) {
             res.status.should.equal(200);
             res.body.success.should.equal(true);
-            res.body.should.have.property("token");
+            res.body.should.have.property('token');
             token = res.body.token;
             done();
         });
@@ -76,8 +76,8 @@ describe('Register User', function() {
 
     it('should return users account info on /account GET', function(done) {
         server
-        .get("/account")
-        .expect("Content-type", /json/)
+        .get('/account')
+        .expect('Content-type', /json/)
         .set('token', token)
         .expect(200)
         .end(function(err, res) {
@@ -86,16 +86,48 @@ describe('Register User', function() {
             res.body.firstName.should.equal('TESTING');
             res.body.lastName.should.equal('SERVER');
             res.body.email.should.equal('testing@server.com');
-            res.body.should.have.property("id");
+            res.body.should.have.property('id');
             userId = res.body.id;
             done();
         });
     });
 
+    it('should update the password, email, firstName, and lastName of the account on /account/update PUT', function(done) {
+        server
+        .put('/account/update')
+        .set('token', token)
+        .send({email: 'newemail@gmail.com', firstName: 'FIRSTNAME', lastName: 'LASTNAME', password: 'password', newPassword: '123456'})
+        .expect('Content-type', /json/)       
+        .expect(200)
+        .end(function(err, res) {
+            res.status.should.equal(200);
+            res.body.success.should.equal(true);
+            done();
+        });
+    });
+
+    it('should return the new account info on /account GET', function(done) {
+        server
+        .get('/account')
+        .expect('Content-type', /json/)
+        .set('token', token)
+        .expect(200)
+        .end(function(err, res) {
+            res.status.should.equal(200);
+            res.body.success.should.equal(true);
+            res.body.firstName.should.equal('FIRSTNAME');
+            res.body.lastName.should.equal('LASTNAME');
+            res.body.email.should.equal('newemail@gmail.com');
+            res.body.should.have.property('id');
+            done();
+        });
+    })
+
     it('should try to change account details but responds with an error because wrong password given on /account/update PUT', function(done) {
         server
-        .put("/account/update")
-        .expect("Content-type", /json/)
+        .put('/account/update')
+        .send({email: 'newemail@gmail.com', firstName: 'FIRSTNAME', lastName: 'LASTNAME', password: 'password'})
+        .expect('Content-type', /json/)
         .set('token', token)
         .expect(200)
         .end(function(err, res) {
