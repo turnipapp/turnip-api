@@ -20,6 +20,7 @@ var notifications  = require('./notifications');
 /* Auth */
 router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
+router.put('/invite/:id', invite.changeStatus );
 
 /********************
  * PROTECTED ROUTES *
@@ -37,7 +38,6 @@ router.put('/event/response', events.response);
 /* Create Event*/
 router.post('/event', events.create );
 router.put('/invite', invite.invite );
-router.put('/invite/:id', invite.changeStatus );
 
 /* Events */
 router.get('/event/:id', event.getOne);
