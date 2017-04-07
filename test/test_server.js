@@ -17,6 +17,9 @@ var server = supertest.agent("http://localhost:5000");
 
 
 describe('Register User', function() {
+    var token;
+    var userId;
+    
     it('should add user TESTING SERVER to the user database on /auth/signup POST', function(done) {
         server
         .post("/auth/signup")
@@ -66,10 +69,41 @@ describe('Register User', function() {
             res.status.should.equal(200);
             res.body.success.should.equal(true);
             res.body.should.have.property("token");
+            token = res.body.token;
             done();
         });
     });
 
+    it('should return users account info on /account GET', function(done) {
+        server
+        .get("/account")
+        .expect("Content-type", /json/)
+        .set('token', token)
+        .expect(200)
+        .end(function(err, res) {
+            res.status.should.equal(200);
+            res.body.success.should.equal(true);
+            res.body.firstName.should.equal('TESTING');
+            res.body.lastName.should.equal('SERVER');
+            res.body.email.should.equal('testing@server.com');
+            res.body.should.have.property("id");
+            userId = res.body.id;
+            done();
+        });
+    });
+
+    it('should try to change account details but responds with an error because wrong password given on /account/update PUT', function(done) {
+        server
+        .put("/account/update")
+        .expect("Content-type", /json/)
+        .set('token', token)
+        .expect(200)
+        .end(function(err, res) {
+            res.status.should.equal(200);
+            res.body.success.should.equal(false);
+            done();
+        });
+    });
 
 });
 
