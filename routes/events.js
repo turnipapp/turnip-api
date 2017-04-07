@@ -7,6 +7,13 @@ var addressValidator = require('address-validator');
 var Address = addressValidator.Address;
 var _ = require('underscore');
 
+
+
+
+
+
+var Async       = require('async');
+
 let transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -110,32 +117,32 @@ var create = function(req, res) {
                     res.json({success: false, message: 'Invite database error'});
                 }
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
-                for(var i = 0; i < invresult.ops.length; i++) {
-                  var url = "http://www.turnip.com/invite/" + invresult.ops[i]._id;
-                  console.log(url);
-                  var users = db.collection('users');
 
-                  var message = "You'be been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
-                  console.log(message);
-                  users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
-                    var email = user.email;
-                    var mailOptions = {
-                      from: '"Turnip Events" <turnipinvites@gmail.com>',
-                      to: email,
-                      subject: "You've been invited to an event on Turnip!",
-                      text: message
-                    }
-                    transporter.sendMail(mailOptions, (error, info) => {
-                      if (error) {
-                        console.log(error);
-                      } else {
-                        console.log("message %s sent: %s", info.messageId, info.response);
+
+                Async.each(invresult.ops, function(invite, callback) {
+                  if (invite == invresult.ops[invresult.ops.length - 1]) {
+                    console.log("host");
+                  } else {
+                    var users = db.collection('users');
+
+                    users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
+                      var email = user.email;
+                      var url = "http://www.turnip.com/invite/" + invite._id;
+                      var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+                      var mailOptions = {
+                        from: '"Turnip Events" <turnipinvites@gmail.com>',
+                        to: email,
+                        subject: "You've been invited to an event on Turnip!",
+                        text: message
                       }
+                      console.log(mailOptions);
+                      transporter.sendMail(mailOptions);
                     });
+                  }
 
-                  });
+                });
 
-                }
+
             });
 
         });
