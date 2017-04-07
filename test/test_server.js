@@ -8,6 +8,7 @@ var server = supertest.agent('http://localhost:5000');
 /**
  * This is where you write your tests. Make sure you follow the structure of the 'Register User' test. 
  * This website helped me writing these tests: https://codeforgeek.com/2015/07/unit-testing-nodejs-application-using-mocha/
+ * If you want to clean your collection go to setup.js and do it there
  * 
  * To run all test go to the /turnip-api/ folder and run 'mocha'
  * 
@@ -136,6 +137,5 @@ describe('Register User', function() {
             done();
         });
     });
-
 });
 
