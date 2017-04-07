@@ -15,14 +15,13 @@ var getnotifications = function (req, res) {
           Filters and returns notifications
         */
         var filtered = [];
-
         var invites = db.collection('invites');
-
+        
     }
 }
 
 var functions = {
-    getnotifications: getnotifications
+    get: getnotifications
 }
 
 modules.exports = functions;

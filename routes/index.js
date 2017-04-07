@@ -11,6 +11,7 @@ var user        = require('./user');
 var event       = require('./event');
 var upload      = require('./upload');
 var posts       = require('./posts');
+var notifications  = require('./notifications');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -70,5 +71,8 @@ router.get('/user/:type/:data', user.getOne);
 
 /* Upload  (TEST) */
 router.post('/uploadimage', upload.uploadimage);
+
+/* Notifications */
+router.get('/notifications/get', notifications.get)
 
 module.exports = router;
