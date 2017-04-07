@@ -22,6 +22,8 @@ router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
 router.put('/invite/:id', invite.changeStatus );
 
+router.get('/invite/:id', invite.getEventInfo);
+
 /********************
  * PROTECTED ROUTES *
  *********************/
@@ -52,8 +54,8 @@ router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
-router.put('/posts/:id', posts.edit);
-router.delete('/posts/:id', posts.delete);
+router.put('/posts/:post_id', posts.edit);
+router.delete('/posts/:post_id', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
