@@ -9,7 +9,7 @@ var invite      = require('./invite');
 var themes      = require('./themes');
 var user        = require('./user');
 var event       = require('./event');
-//var upload      = require('./upload.js');
+var upload      = require('./upload.js');
 var posts       = require('./posts');
 var notifications  = require('./notifications');
 
@@ -71,7 +71,7 @@ router.get('/user/:type/:data', user.getOne);
 
 
 /* Upload  (TEST) */
-//router.post('/uploadimage', upload.uploadimage);
+router.post('/upload', upload.uploadimage);
 
 /* Notifications */
 router.get('/notifications/get', notifications.get)
