@@ -147,7 +147,7 @@ var create = function(req, res) {
             });
 
         });
-        
+
     });
 };
 
@@ -288,8 +288,10 @@ var info = function (req, res) {
             return;
         })
 
-        })
-} 
+
+    })
+}
+
 
 var functions = {
   response: response,
