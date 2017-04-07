@@ -104,6 +104,7 @@ function allowSignup(body, db, res) {
             if(err) {
                 res.json({success: false, message: 'Database error'});
             }
+            console.log(result);
             res.json({success: true, message: 'Successfully registered. Redirecting...'});
         });
     });

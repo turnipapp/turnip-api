@@ -100,7 +100,7 @@ var create = function(req, res) {
                   var users = db.collection('users');
 
                   var message = "You'be been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
-
+                  console.log(message);
                   users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
                     var email = user.email;
                     var mailOptions = {
