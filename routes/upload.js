@@ -14,18 +14,18 @@ var upload = multer({dest: 'tempfiles/'}).single('name');
 var uploadimage = function(req, res) {
             //TODO: Make private images that only buffer for auth
     try {
-        upload (req,res,function(req,res) {
-            /*fs.readFile(req.file.image.path, function (err, data) {
+        upload (req, res,  function(req,res) {
+            console.log(req);
+            /*            fs.readFile(req.file.image.path, function (err, data) {
                 var dirname = 'tempfiles/'
                 var newPath = dirname + req.body.filename;
             });
             fs.writeFile(newPath, data, function (err) {
                 if (err) 
                     return res.end('Error uploading files to node server');
-            });*/
+            });
 
-        
-        buf = new Buffer(req.body.imageBinary.replace(/^data:image\/\w+;base64,/, ""),'base64')
+/*        
         var type;
         switch (req.body.type) {
             case 'jpeg': type = 'image/jpeg'; break;
@@ -34,9 +34,7 @@ var uploadimage = function(req, res) {
             
         var data = {
             Key: req.body.imageName, 
-            Body: buf,
-            ContentEncoding: 'base64',
-            ContentType: type 
+            Body: fs.createReadStream(req.file.path),
         };
         s3Bucket.putObject(data, function(err, data){
             console.log(data);
@@ -46,12 +44,12 @@ var uploadimage = function(req, res) {
             } else {
                 res.json({message:'Succesfully uploaded the image!'});
             }
-        });
+        });*/
         });
     }catch (err) {
-            res.json({message: '' + err});
+        res.json({message: '' + err});
     }
-                    return res.end('Error uploading files to node server');
+        return res.end('Error uploading files to node server');
 };
 
 var functions = {
