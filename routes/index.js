@@ -31,7 +31,7 @@ router.use(auth.verifyToken);
 router.get('/events/notify', events.notify);   //Events with unread notifications
 router.get('/events/past', events.past );
 router.get('/events/upcoming', events.upcoming );
-router.get('/events/info', events.info);
+router.get('/events/info/:eventId', events.info);
 router.put('/event/response', events.response);
 
 /* Create Event*/

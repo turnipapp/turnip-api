@@ -91,7 +91,6 @@ var create = function(req, res) {
                     userId: new ObjectID(req.body.invites[i].id),
                     eventId: result.ops[0]._id,
                     response: 'no',
-                    username: req.body.invites[i].username,
                     notifications: notifications
                 };
 
@@ -273,14 +272,20 @@ var notify = function (req, res) {
 var info = function (req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
-        invites.find({eventId: new ObjectID(req.body.eventId)}).toArray(function (err, docs) {
+        
+        console.log(req.params.eventId);
+        invites.find({eventId: new ObjectID(req.params.eventId)}).toArray(function (err, docs) {
             if (err) {
                 return res.end ({success: false, message: "Error querying DB"});
             }
             var guests = [];
             var count = 0;
-
+            console.log(docs.length);
             for (var i = 0; i < docs.length; i++) {
+               var guest = {
+                    username: docs[i].userId,
+                    response: docs[i].response
+               } 
                count++;
                guests.push(guest);
             }
@@ -288,7 +293,7 @@ var info = function (req, res) {
             return;
         })
 
-        })
+    })
 } 
 
 var functions = {
