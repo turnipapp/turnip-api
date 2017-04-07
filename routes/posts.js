@@ -77,8 +77,20 @@ var create = function(req, res) {
 var edit = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
+        var events = db.collection('events');
 
-        posts.update({"_id": new ObjectID(req.body.postID)}, {$set: {
+        var userId = req.decoded._id;
+        var post = posts.findOne({'_id': new ObjectID(req.params.id)});
+        var postCreatorId = post.userId;
+
+        var event = events.findOne({'_id': new ObjectID(post.eventId)});
+        var hostId = event.owner;
+
+        if(!(userId.equals(hostId) || userId.equals(postCreatorId))) {
+            res.json({success: false, message: 'User does not have permission to edit post'});
+        }
+
+        posts.update({"_id": new ObjectID(req.params.post_id)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
             if(err) {
