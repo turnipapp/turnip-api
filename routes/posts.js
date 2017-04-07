@@ -13,7 +13,7 @@ var getAll = function(req, res) {
             if (sorted.length > 0) {
               for(var i = 0; i < sorted.length; i++) {
                 posts.find({parentId: sorted[i]._id}).toArray(function(err, comments) {
-                  if (comments) {
+                  if (comments.length > 0) {
                     sorted[i].comments = comments;
                   }
                 });
