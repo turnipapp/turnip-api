@@ -146,7 +146,7 @@ var create = function(req, res) {
             });
 
         });
-        
+
     });
 };
 
@@ -292,7 +292,7 @@ var eventinfo = function (req, res) {
             return res.end({success: true, message: "Retrieved event info", guests: guests, count: count});
         });
 
-    }) 
+    })
 }
 
 var functions = {
