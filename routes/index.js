@@ -9,8 +9,9 @@ var invite      = require('./invite');
 var themes      = require('./themes');
 var user        = require('./user');
 var event       = require('./event');
-var upload      = require('./upload');
+//var upload      = require('./upload.js');
 var posts       = require('./posts');
+var notifications  = require('./notifications');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -19,6 +20,9 @@ var posts       = require('./posts');
 /* Auth */
 router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
+router.put('/invite/:id', invite.changeStatus );
+
+router.get('/invite/:id', invite.getEventInfo);
 
 /********************
  * PROTECTED ROUTES *
@@ -30,12 +34,12 @@ router.use(auth.verifyToken);
 router.get('/events/notify', events.notify);   //Events with unread notifications
 router.get('/events/past', events.past );
 router.get('/events/upcoming', events.upcoming );
+router.get('/events/info/:eventId', events.info);
 router.put('/event/response', events.response);
 
 /* Create Event*/
 router.post('/event', events.create );
 router.put('/invite', invite.invite );
-router.put('/invite/:id', invite.changeStatus );
 
 /* Events */
 router.get('/event/:id', event.getOne);
@@ -69,6 +73,9 @@ router.get('/user/:type/:data', user.getOne);
 
 
 /* Upload  (TEST) */
-router.post('/uploadimage', upload.uploadimage);
+//router.post('/uploadimage', upload.uploadimage);
+
+/* Notifications */
+router.get('/notifications/get', notifications.get)
 
 module.exports = router;

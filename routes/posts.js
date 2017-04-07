@@ -10,6 +10,16 @@ var getAll = function(req, res) {
         posts.find({eventId: req.params.id}).toArray(function(err, docs) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
+            if (sorted.length > 0) {
+              for(var i = 0; i < sorted.length; i++) {
+                posts.find({parentId: sorted[i]._id}).toArray(function(err, comments) {
+                  if (comments) {
+                    sorted[i].comments = comments;
+                  }
+                });
+              }
+            }
+
             res.json({success: true, posts: sorted});
         });
 
@@ -30,8 +40,10 @@ var create = function(req, res) {
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
-            eventId: req.params.id,
-            timestamp: new Date()
+            eventId: req.body.eventId,
+            timestamp: new Date(),
+            parentId: req.body.parentId
+
         };
 
         /*

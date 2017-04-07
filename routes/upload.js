@@ -5,18 +5,41 @@ var url         = process.env.MONGO_URL || config.database;
 var aws         = require('aws-sdk');
 aws.config.loadFromPath('./s3_config.json');
 var s3Bucket = new aws.S3({params:{Bucket: 'turnip.com/imagess'}});
+var multer = require('multer');
+var fs = require('fs');
+
+var upload = multer({dest: 'tempfiles/'}).single('name');
 
 // POST req.body.imageBinary
 var uploadimage = function(req, res) {
-        
-    //TODO: Make private images that only buffer for auth
+            //TODO: Make private images that only buffer for auth
     try {
-        buf = new Buffer(req.body.imageBinary.replace(/^data:image\/\w+;base64,/, ""),'base64')
+        if (!fs.existsSync('tempfiles/')){
+                fs.mkdirSync('tempfiles/');
+        }
+        upload ();
+        
+            /* {
+
+            /*            fs.readFile(req.file.image.path, function (err, data) {
+                var dirname = 'tempfiles/'
+                var newPath = dirname + req.body.filename;
+            });
+            fs.writeFile(newPath, data, function (err) {
+                if (err) 
+                    return res.end('Error uploading files to node server');
+            });
+
+/*        
+        var type;
+        switch (req.body.type) {
+            case 'jpeg': type = 'image/jpeg'; break;
+            case 'png': type = 'image/png'; break; 
+        }
+            
         var data = {
             Key: req.body.imageName, 
-            Body: buf,
-            ContentEncoding: 'base64',
-            ContentType: 'image/jpeg'
+            Body: fs.createReadStream(req.file.path),
         };
         s3Bucket.putObject(data, function(err, data){
             console.log(data);
@@ -26,14 +49,16 @@ var uploadimage = function(req, res) {
             } else {
                 res.json({message:'Succesfully uploaded the image!'});
             }
-        });
+        });*//*
+        };*/
     }catch (err) {
-            res.json({message:'Error'});
+        res.json({message: '' + err});
     }
+        return res.end('Error uploading files to node server');
 };
 
 var functions = {
-    uploadimage: uploadimage,
+    uploadimage: uploadimage
 };
 
 module.exports = functions;

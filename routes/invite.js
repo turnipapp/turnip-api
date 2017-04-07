@@ -55,6 +55,7 @@ var inviteUser = function (req, res) {
                     owner: req.decoded._id,
                     eventID: req.body.eventID,
                     userID: doc._id,
+                    email: doc._email,
                     response: "no",
                     update: true,
                     notifications: notifications
@@ -84,7 +85,9 @@ var changeStatus = function(req, res) {
 
   MongoClient.connect(url, function(err, db){
     var invites = db.collection('invites');
-
+    if (req.params.id.length != 24) {
+      res.json({success: false, message: "Invalid invite URL"});
+    }
     invites.findOne({_id: new ObjectID(req.params.id)}, function(err, invite) {
       if (!invite) {
         res.json({success: false, message: "Invalid invite URL"});
@@ -104,9 +107,31 @@ var changeStatus = function(req, res) {
   });
 }
 
+var getEventInfo = function(req, res) {
+  MongoClient.connect(url, function(err, db) {
+    var invites = db.collection('invites');
+    var events = db.collection('events');
+    invites.findOne({_id: new ObjectID(req.params.id)}, function(err, invite) {
+      if (!invite) {
+        res.json({success: false, message: "Invalid invite URL"});
+      } else {
+        events.findOne({_id: invite.eventId}, function(err, inviteEvent) {
+          if (!inviteEvent) {
+            res.json({success: false, message: "Invalid invite URL"});
+          } else {
+            res.json({success: true, title: inviteEvent.title});
+          }
+        });
+      }
+
+    });
+  });
+}
+
 var functions = {
     invite: inviteUser,
-    changeStatus: changeStatus
+    changeStatus: changeStatus,
+    getEventInfo: getEventInfo
 };
 
 module.exports = functions;

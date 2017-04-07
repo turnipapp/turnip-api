@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/turnipapp/turnip-api#readme",
   "dependencies": {
+    "address-validator": "^0.2.2",
+    "async": "^2.3.0",
     "aws-sdk": "~2.x",
     "bcrypt": "~1.0.2",
     "body-parser": "~1.16.0",
