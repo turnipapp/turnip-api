@@ -83,6 +83,15 @@ var edit = function(req, res) {
         var posts = db.collection('posts');
         var events = db.collection('events');
 
+        var userId = new ObjectID(req.decoded._id);
+        var post = posts.findOne({'_id': new ObjectID(req.params.post_id)});
+        var postCreatorId = new ObjectID(post.userId);
+
+        if(!userId.equals(hostId)) {
+            res.json({success: false, message: 'User does not have permission to edit post'});
+            return;
+        
+
         posts.update({"_id": new ObjectID(req.params.post_id)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
