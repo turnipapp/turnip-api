@@ -14,6 +14,10 @@ var getAccount = function(req, res) {
 
         var userId = req.decoded._id;
         users.findOne({"_id": new ObjectID(userId)}, function(err, document){
+            if(err) {
+                res.json({success: false, message: "User not found"});
+                return;
+            }
             res.json({success: true, firstName: document.firstName, lastName: document.lastName, email: document.email, id: document._id});
         });
     });

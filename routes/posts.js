@@ -10,26 +10,8 @@ var getAll = function(req, res) {
         posts.find({eventId: req.params.id}).toArray(function(err, docs) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
-            if (sorted.length > 0) {
-              for(var i = 0; i < sorted.length; i++) {
-                posts.find({parentId: sorted[i]._id}).toArray(function(err, comments) {
-                  if (comments) {
-                    sorted[i].comments = comments;
-                  }
-                });
-              }
-            }
-
             res.json({success: true, posts: sorted});
         });
-
-        // events.findOne({"_id": new ObjectID(req.params.id)}, function(err, e) {
-        //     if(err) {
-        //         res.json({success: false, message: 'Database error'});
-        //     }
-        //
-        //     res.json({success: true, event: e});
-        // });
     });
 };
 
@@ -42,8 +24,7 @@ var create = function(req, res) {
             userId: new ObjectID(req.decoded._id),
             eventId: req.body.eventId,
             timestamp: new Date(),
-            parentId: req.body.parentId
-
+            comments: []
         };
 
         /*
@@ -55,31 +36,11 @@ var create = function(req, res) {
             seen: false,
             message: message,
             timestamp: new Date()
-        }
+        };
         var invites = db.collection('invites');
         invites.update({"eventId": req.body.id}, { $push: {notifications: notification}});
 
-        /*
-        invites.find({"eventId": {$in : req.body.id}}).toArray( function (err, docs) {
-            if (err) {
-              res.json({success: false, message: 'Error updating user notifications'});
-              return;
-            }
 
-            var message = 'A user has posted in the event: ' + req.body.id;
-
-            var notification = {
-                type: 4,
-                seen: false,
-                message: message,
-                timestamp: new Date.now()
-            }
-
-            for (var i = 0; i < docs.length; i++) {
-                docs[i].notifications.push(obj)
-            }
-        });
-        */
         posts.insert(postObj, function(err, result) {
             res.json({success: true});
         });
@@ -101,7 +62,7 @@ var edit = function(req, res) {
                 breakFunction = true;
                 return;
             }
-            
+
             var userId = new ObjectID(req.decoded._id);
             var postCreatorId = new ObjectID(post.userId);
 
@@ -110,7 +71,7 @@ var edit = function(req, res) {
                 breakFunction = true;
             }
         });
-        
+
         if(breakFunction){
             return;
         }
@@ -160,7 +121,7 @@ var delete_post = function(req, res) {
                     return;
                 }
 
-                posts.remove({_id: ObjectID(req.params.post_id)}, function(err, result) {
+                posts.remove({_id: new ObjectID(req.params.post_id)}, function(err, result) {
                     if(err) {
                         res.json({success: false, message: 'Database error.'});
                     }
@@ -168,7 +129,29 @@ var delete_post = function(req, res) {
                     res.json({success: true, message: 'Successfully deleted post.'});
                 });
             });
-        })
+        });
+    });
+};
+
+var addComment = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+
+        var comment = {
+            author: req.decoded._id,
+            body: req.body.comment,
+            visible: true,
+            timestamp: new Date()
+        };
+
+
+        posts.findOne({"_id": new ObjectID(req.params.id)}, function(err, doc) {
+            if(doc) {
+                posts.update({"_id": new ObjectID(req.params.id)}, { $push: {comments: comment}}, function (err, update) {
+                    res.json({success: true});
+                });
+            }
+        });
     });
 };
 
@@ -176,7 +159,8 @@ var functions = {
     getAll: getAll,
     create: create,
     edit: edit,
-    delete: delete_post
+    delete: delete_post,
+    addComment: addComment
 };
 
 function sortByKey(array, key) {

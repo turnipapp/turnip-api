@@ -11,22 +11,21 @@ var url         = process.env.MONGO_URL || config.database;
 var inviteUser = function (req, res) {
     MongoClient.connect(url, function (err, db) {
         if (err) {
-            res.json({success: false, message: 'Error inviting user'})
-
+            res.json({success: false, message: 'Error inviting user'});
         }
         if (!req.body.eventID || !req.decoded._id || ! req.body.userID) {
-            res.json({success: false, message: 'Error inviting user: NE Info'})
-            return
+            res.json({success: false, message: 'Error inviting user: NE Info'});
+            return;
         }
-        var events = db.collection('events')
-        var users = db.collection('users')
-        var invites = db.collection('invites')
+        var events = db.collection('events');
+        var users = db.collection('users');
+        var invites = db.collection('invites');
 
 
         events.findOne({_id: new ObjectID(req.body.eventID), owner: req.decoded._id }, function (err)  {
             if (err) {
-                res.json({success: false, message: 'Error retrieving event'})
-                return
+                res.json({success: false, message: 'Error retrieving event'});
+                return;
             }
 
             //TODO: Allow for inviting an array of users
@@ -35,8 +34,8 @@ var inviteUser = function (req, res) {
             //TODO: Add notification functionality
             users.findOne({email: req.body.email}, function (err, doc) {
                 if (!doc) {
-                    res.json({success: false, message: "No user found with that email"})
-                    return
+                    res.json({success: false, message: "No user found with that email"});
+                    return;
                 }
 
                 /*
@@ -48,7 +47,7 @@ var inviteUser = function (req, res) {
                     seen: false,
                     message: 'You have been invited to a new event!',
                     timestamp: new Date.now()
-                }
+                };
                 notifications.push(notification);
 
                 var invite = {
@@ -59,27 +58,25 @@ var inviteUser = function (req, res) {
                     response: "no",
                     update: true,
                     notifications: notifications
-                }
+                };
 
-                var invited = invites.find({eventID: req.body.eventID, userID: doc._id})
+                var invited = invites.find({eventID: req.body.eventID, userID: doc._id});
                 if (!invited) {
                     invites.insert(invite, function (err, result) {
                         if (err) {
-                            res.json({success: false, message: "Invites insert error"})
-                            return
+                            res.json({success: false, message: "Invites insert error"});
+                            return;
                         }
-
-                        res.json({success: true, message: "User invited successfully"})
-                        return
-                    })
+                        res.json({success: true, message: "User invited successfully"});
+                        return;
+                    });
                 } else {
-                    res.json({success: false, message: "User is already invited"})
+                    res.json({success: false, message: "User is already invited"});
                 }
-            })
-
-        })
-    })
-}
+            });
+        });
+    });
+};
 
 var changeStatus = function(req, res) {
 
@@ -95,9 +92,6 @@ var changeStatus = function(req, res) {
         if (req.body.inviteResponse != "yes" && req.body.inviteResponse != "no" && req.body.inviteResponse != "maybe") {
           res.json({success: false, message: "Invite status must be \'yes\', \'no\', or \'maybe\'."});
         } else{
-          console.log("invite found!");
-          console.log("previous invite status: " + invite.response);
-          console.log("new invite status: " + req.body.inviteResponse);
           invites.update({_id: new ObjectID(req.params.id)}, {$set: {response: req.body.inviteResponse}});
           res.json({success: true, message: "Invite status updated successfully"});
         }
@@ -105,7 +99,7 @@ var changeStatus = function(req, res) {
       }
     });
   });
-}
+};
 
 var getEventInfo = function(req, res) {
   MongoClient.connect(url, function(err, db) {
@@ -126,7 +120,7 @@ var getEventInfo = function(req, res) {
 
     });
   });
-}
+};
 
 var functions = {
     invite: inviteUser,

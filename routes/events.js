@@ -6,7 +6,7 @@ var url         = process.env.MONGO_URL || config.database;
 var addressValidator = require('address-validator');
 var Address = addressValidator.Address;
 var _ = require('underscore');
-
+var fs = require('fs');
 
 
 
@@ -14,7 +14,7 @@ var _ = require('underscore');
 
 var Async       = require('async');
 
-let transporter = nodemailer.createTransport({
+var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: config.emailAddress,
@@ -74,7 +74,7 @@ var create = function(req, res) {
                 seen: false,
                 message: 'You have been invited to a new event!',
                 timestamp: new Date()
-            }
+            };
             notifications.push(notification);
 
             var inviteObj = {
@@ -84,7 +84,6 @@ var create = function(req, res) {
                 notifications: notifications
             };
 
-            console.log(req.body.invites);
             var invites = [];
             for (var i = 0; i < req.body.invites.length; i++) {
                 var obj = {
@@ -104,7 +103,6 @@ var create = function(req, res) {
                       user.eventsInvited = 0;
                     }
                     var newEventsInvited = user.eventsInvited + 1;
-                    console.log(newEventsInvited);
                     users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
                   }
                 });
@@ -122,21 +120,23 @@ var create = function(req, res) {
 
                 Async.each(invresult.ops, function(invite, callback) {
                   if (invite == invresult.ops[invresult.ops.length - 1]) {
-                    console.log("host");
                   } else {
                     var users = db.collection('users');
 
                     users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
                       var email = user.email;
-                      var url = "http://www.turnip.com/invite/" + invite._id;
+                      var url = "http://localhost:3000/invite/" + invite._id;
                       var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+                      var html = fs.readFileSync("./routes/emailTemplate.html", "utf8");
+                      html = html.replace("REPLACE_LINK_HERE", url);
+
                       var mailOptions = {
                         from: '"Turnip Events" <turnipinvites@gmail.com>',
                         to: email,
                         subject: "You've been invited to an event on Turnip!",
-                        text: message
-                      }
-                      console.log(mailOptions);
+                        text: message,
+                        html: html
+                      };
                       transporter.sendMail(mailOptions);
                     });
                   }
@@ -145,7 +145,6 @@ var create = function(req, res) {
 
 
             });
-            console.log(result._id);
         });
 
     });
@@ -253,11 +252,11 @@ var notify = function (req, res) {
         var invites = db.collection('invites');
         invites.find({update: true}, function (err, docs) {
             if (err) {
-                res.json({message: 'Error finding updates'})
+                res.json({message: 'Error finding updates'});
                 return;
             }
             if (docs.length === 0) {
-                res.json({message: 'No events found'})
+                res.json({message: 'No events found'});
             }
 
             var notifications = [];
@@ -265,36 +264,33 @@ var notify = function (req, res) {
                 notifications.push (docs[i].notification);
             }
 
-            res.json({message: 'Retrieved Updates', notifications});
-        })
-    })
-}
+            res.json({message: 'Retrieved Updates', notifications: notifications});
+        });
+    });
+};
 var info = function (req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
 
-        console.log(req.params.eventId);
         invites.find({eventId: new ObjectID(req.params.eventId)}).toArray(function (err, docs) {
             if (err) {
                 return res.end ({success: false, message: "Error querying DB"});
             }
             var guests = [];
             var count = 0;
-            console.log(docs.length);
             for (var i = 0; i < docs.length; i++) {
                var guest = {
                     username: docs[i].userId,
                     response: docs[i].response
-               }
+               };
                count++;
                guests.push(guest);
             }
             res.json({success: true, message: "Retrieved event info", guests: guests, count: count});
             return;
-        })
-
-    })
-}
+        });
+    });
+};
 
 
 var functions = {
