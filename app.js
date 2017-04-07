@@ -8,6 +8,7 @@ var mongoSessionUrl = process.env.MONGO_SESSION_URL || 'mongodb://localhost:2701
 var port            = process.env.PORT || 5000;
 var logger          = require('morgan');
 var aws             = require('aws-sdk');
+var multer          = require('multer');
 
 // JSON WEB TOKEN
 app.set('superSecret', 'ThIsIsSoSeCrEt'); // secret variable
@@ -28,6 +29,8 @@ app.use(logger('dev'));
  app.use(bodyParser.urlencoded({ extended: false }));
  app.use(bodyParser.json());
 
+
+ app.use(multer({ dest: 'tempfiles/'}).single('name'));
 /* External Routes
  * Abstratcs out routes
  */
@@ -35,3 +38,4 @@ app.use('/', require('./routes'));
 
 app.listen(port);
 console.log("Listening on port " + port);
+

@@ -1,7 +1,18 @@
 var MongoClient = require('mongodb').MongoClient;
 var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
+var nodemailer  = require('nodemailer');
 var url         = process.env.MONGO_URL || config.database;
+
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: config.emailAddress,
+    pass: config.emailPassword
+  }
+});
+
+
 
 // Creates Event
 // POST /event
@@ -39,7 +50,7 @@ var create = function(req, res) {
                 type: 1,
                 seen: false,
                 message: 'You have been invited to a new event!',
-                timestamp: new Date.now()
+                timestamp: new Date()
             }
             notifications.push(notification);
 
@@ -50,6 +61,7 @@ var create = function(req, res) {
                 notifications: notifications
             };
 
+            console.log(req.body.invites);
             var invites = [];
             for (var i = 0; i < req.body.invites.length; i++) {
                 var obj = {
@@ -58,6 +70,20 @@ var create = function(req, res) {
                     response: 'no',
                     notifications: notifications
                 };
+
+                //Updates the number of events a user has been invited to.
+                users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
+                  if(err) {
+                    res.json({success: false, message: 'User database error'});
+                  } else {
+                    if (isNaN(user.eventsInvited)) {
+                      user.eventsInvited = 0;
+                    }
+                    var newEventsInvited = user.eventsInvited + 1;
+                    console.log(newEventsInvited);
+                    users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
+                  }
+                });
                 invites.push(obj);
             }
 
@@ -68,9 +94,31 @@ var create = function(req, res) {
                     res.json({success: false, message: 'Invite database error'});
                 }
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
-                for(var i = 1; i < invresult.ops.length; i++) {
+                for(var i = 0; i < invresult.ops.length; i++) {
                   var url = "http://www.turnip.com/invite/" + invresult.ops[i]._id;
                   console.log(url);
+                  var users = db.collection('users');
+
+                  var message = "You'be been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+
+                  users.findOne({"_id": new ObjectID(invresult.ops[i].userId)}, function(err, user) {
+                    var email = user.email;
+                    var mailOptions = {
+                      from: '"Turnip Events" <turnipinvites@gmail.com>',
+                      to: email,
+                      subject: "You've been invited to an event on Turnip!",
+                      text: message
+                    }
+                    transporter.sendMail(mailOptions, (error, info) => {
+                      if (error) {
+                        console.log(error);
+                      } else {
+                        console.log("message %s sent: %s", info.messageId, info.response);
+                      }
+                    });
+
+                  });
+
                 }
             });
 

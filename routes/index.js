@@ -35,7 +35,7 @@ router.put('/event/response', events.response);
 /* Create Event*/
 router.post('/event', events.create );
 router.put('/invite', invite.invite );
-router.post('/invite/:id', invite.changeStatus );
+router.put('/invite/:id', invite.changeStatus );
 
 /* Events */
 router.get('/event/:id', event.getOne);
@@ -45,6 +45,7 @@ router.delete('/event/:id/apps/:appId', event.deleteOneApp);
 router.get('/event/:id/role', event.getRole);
 router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
+router.get('/event/:id/getLocation', event.getLocation);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
@@ -59,6 +60,7 @@ router.get('/themes/:id', themes.getOne);
 
 /* Account */
 router.get('/account', account.getAccount);
+//router.get('/account/public', account.getPublicAccount);
 router.post('/account/update', account.update);
 
 /* Users */
