@@ -250,25 +250,23 @@ var notify = function (req, res) {
 var info = function (req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
-        invites.find({eventId: new ObjectID(req.body.eventId)}, function (err, docs) {
+        invites.find({eventId: new ObjectID(req.body.eventId)}).toArray(function (err, docs) {
             if (err) {
                 return res.end ({success: false, message: "Error querying DB"});
             }
-            var guest;
             var guests = [];
             var count = 0;
 
             for (var i = 0; i < docs.length; i++) {
-               guest.username = docs[i].username;
-               guest.response = docs[i].response;
                count++;
                guests.push(guest);
             }
-            return res.end({success: true, message: "Retrieved event info", guests: guests, count: count});
-        });
+            res.json({success: true, message: "Retrieved event info", guests: guests, count: count});
+            return;
+        })
 
-    }) 
-}
+        })
+} 
 
 var functions = {
   response: response,
