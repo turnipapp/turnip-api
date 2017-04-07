@@ -10,12 +10,16 @@ var getAll = function(req, res) {
         posts.find({eventId: req.params.id}).toArray(function(err, docs) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
-
-            for(var i = 0; i < sorted.length; i++) {
-              posts.find({parentId: sorted[i]._id}).toArray(function(err, comments) {
-                sorted[i].comments = comments;
-              });
+            if (sorted.length > 0) {
+              for(var i = 0; i < sorted.length; i++) {
+                posts.find({parentId: sorted[i]._id}).toArray(function(err, comments) {
+                  if (comments) {
+                    sorted[i].comments = comments;
+                  }
+                });
+              }
             }
+
             res.json({success: true, posts: sorted});
         });
 

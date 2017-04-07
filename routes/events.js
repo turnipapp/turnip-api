@@ -145,7 +145,7 @@ var create = function(req, res) {
 
 
             });
-
+            console.log(result._id);
         });
 
     });
