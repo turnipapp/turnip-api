@@ -30,7 +30,7 @@ var create = function(req, res) {
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
-            eventId: req.body.eventId,
+            eventId: req.params.id,
             timestamp: new Date()
         };
 
@@ -81,22 +81,34 @@ var create = function(req, res) {
 var edit = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
-        var events = db.collection('events');
+        var breakFunction = false;
 
-        var userId = new ObjectID(req.decoded._id);
-        var post = posts.findOne({'_id': new ObjectID(req.params.post_id)});
-        var postCreatorId = new ObjectID(post.userId);
+        posts.findOne({'_id': new ObjectID(req.params.post_id)}, function(err, post) {
+            if(err) {
+                res.json({success: false, message: "Database error"});
+                breakFunction = true;
+                return;
+            }
+            
+            var userId = new ObjectID(req.decoded._id);
+            var postCreatorId = new ObjectID(post.userId);
 
-        if(!userId.equals(hostId)) {
-            res.json({success: false, message: 'User does not have permission to edit post'});
-            return;
+            if(!(userId.equals(postCreatorId))) {
+                res.json({success: false, message: 'User does not have permission to edit post'});
+                breakFunction = true;
+            }
+        });
         
+        if(breakFunction){
+            return;
+        }
 
         posts.update({"_id": new ObjectID(req.params.post_id)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
             if(err) {
                 res.json({success: false, message: 'Database error.'});
+                return;
             }
 
             res.json({success: true, message: 'Successfully edited post.'});
@@ -108,26 +120,37 @@ var edit = function(req, res) {
 var delete_post = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
+        var events = db.collection('events');
+        var breakFunction = false;
 
-        var userId = new ObjectID(req.decoded._id);
-        var post = posts.findOne({'_id': new ObjectID(req.params.post_id)});
-        var postCreatorId = new ObjectID(post.userId);
-
-        var event = events.findOne({'_id': new ObjectID(post.eventId)});
-        var hostId = new ObjectID(event.owner);
-
-        if(!(userId.equals(hostId) || userId.equals(postCreatorId))) {
-            res.json({success: false, message: 'User does not have permission to edit post'});
-            return;
-        }
-
-        posts.remove({_id: ObjectID(req.body.postID)}, function(err, result) {
+        posts.findOne({'_id': new ObjectID(req.params.post_id)}, function(err, post) {
             if(err) {
-                res.json({success: false, message: 'Database error.'});
+                res.json({success: false, message: "Database error"});
+                breakFunction = true;
+                return;
             }
 
-            res.json({success: true, message: 'Successfully deleted post.'});
-        });
+            if(breakFunction){
+                return;
+            }
+
+            events.findOne({'_id': new ObjectID(post.eventId)}, function(err, event) {
+                if(err){
+                    res.json({success: false, message: "Database error"});
+                    return;
+                }
+                var userId = new ObjectID(req.decoded._id);
+                var hostId = new ObjectID(event.owner);
+                var postCreatorId = new ObjectID(post.userId);
+
+                if(!(userId.equals(hostId) || userId.equals(postCreatorId))){
+                    res.json({success: false, message: "User does not have permission to delete post"});
+                    return;
+                }
+
+                posts.remove({'_id': req.params.post_id});
+            });
+        })
     });
 };
 
