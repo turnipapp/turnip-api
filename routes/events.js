@@ -125,7 +125,7 @@ var create = function(req, res) {
 
                     users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
                       var email = user.email;
-                      var url = "http://www.turnip.com/invite/" + invite._id;
+                      var url = "http://localhost:3000/invite/" + invite._id;
                       var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
                       var html = fs.readFileSync("./routes/emailTemplate.html", "utf8");
                       html = html.replace("REPLACE_LINK_HERE", url);
