@@ -14,7 +14,7 @@ var fs = require('fs');
 
 var Async       = require('async');
 
-let transporter = nodemailer.createTransport({
+var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: config.emailAddress,
@@ -74,7 +74,7 @@ var create = function(req, res) {
                 seen: false,
                 message: 'You have been invited to a new event!',
                 timestamp: new Date()
-            }
+            };
             notifications.push(notification);
 
             var inviteObj = {
@@ -84,7 +84,6 @@ var create = function(req, res) {
                 notifications: notifications
             };
 
-            console.log(req.body.invites);
             var invites = [];
             for (var i = 0; i < req.body.invites.length; i++) {
                 var obj = {
@@ -104,7 +103,6 @@ var create = function(req, res) {
                       user.eventsInvited = 0;
                     }
                     var newEventsInvited = user.eventsInvited + 1;
-                    console.log(newEventsInvited);
                     users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
                   }
                 });
@@ -254,11 +252,11 @@ var notify = function (req, res) {
         var invites = db.collection('invites');
         invites.find({update: true}, function (err, docs) {
             if (err) {
-                res.json({message: 'Error finding updates'})
+                res.json({message: 'Error finding updates'});
                 return;
             }
             if (docs.length === 0) {
-                res.json({message: 'No events found'})
+                res.json({message: 'No events found'});
             }
 
             var notifications = [];
@@ -266,36 +264,33 @@ var notify = function (req, res) {
                 notifications.push (docs[i].notification);
             }
 
-            res.json({message: 'Retrieved Updates', notifications});
-        })
-    })
-}
+            res.json({message: 'Retrieved Updates', notifications: notifications});
+        });
+    });
+};
 var info = function (req, res) {
     MongoClient.connect(url, function(err, db) {
         var invites = db.collection('invites');
 
-        console.log(req.params.eventId);
         invites.find({eventId: new ObjectID(req.params.eventId)}).toArray(function (err, docs) {
             if (err) {
                 return res.end ({success: false, message: "Error querying DB"});
             }
             var guests = [];
             var count = 0;
-            console.log(docs.length);
             for (var i = 0; i < docs.length; i++) {
                var guest = {
                     username: docs[i].userId,
                     response: docs[i].response
-               }
+               };
                count++;
                guests.push(guest);
             }
             res.json({success: true, message: "Retrieved event info", guests: guests, count: count});
             return;
-        })
-
-    })
-}
+        });
+    });
+};
 
 
 var functions = {
