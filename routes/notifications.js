@@ -26,7 +26,7 @@ var get = function (req, res) {
                 filtered.push(docs[i].notifications);
                 count++;
             }
-            invites.update([{userId: new ObjectID(req.decoded._id)}, {$set: {'notifications.seen': true}}])
+     //       invites.update([{userId: new ObjectID(req.decoded._id)}, {$set: {'notifications.seen': true}}])
 
             res.json({success: true, message: "Retrieved notifications", notifications: filtered, count: count});
         });
