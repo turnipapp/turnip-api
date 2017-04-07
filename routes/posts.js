@@ -74,6 +74,10 @@ var create = function(req, res) {
     });
 };
 
+/**
+ * Allows user to edit post
+ * req = {text: string}
+ */
 var edit = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
