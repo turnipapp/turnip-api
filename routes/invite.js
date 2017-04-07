@@ -55,6 +55,7 @@ var inviteUser = function (req, res) {
                     owner: req.decoded._id,
                     eventID: req.body.eventID,
                     userID: doc._id,
+                    email: doc._email,
                     response: "no",
                     update: true,
                     notifications: notifications
