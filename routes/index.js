@@ -22,6 +22,8 @@ router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
 router.put('/invite/:id', invite.changeStatus );
 
+router.get('/invite/:id', invite.getEventInfo);
+
 /********************
  * PROTECTED ROUTES *
  *********************/
