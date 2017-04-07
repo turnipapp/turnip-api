@@ -38,7 +38,7 @@ var create = function(req, res) {
             userId: new ObjectID(req.decoded._id),
             eventId: req.body.eventId,
             timestamp: new Date(),
-            parentId: req.body.parentId;
+            parentId: req.body.parentId
         };
 
         /*
