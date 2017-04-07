@@ -3,6 +3,9 @@ var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var nodemailer  = require('nodemailer');
 var url         = process.env.MONGO_URL || config.database;
+var addressValidator = require('address-validator');
+var Address = addressValidator.Address;
+var _ = require('underscore');
 
 let transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -29,6 +32,19 @@ var create = function(req, res) {
           return;
         }
 
+        //Validates the address through Google Maps API
+        //API found here: https://www.npmjs.com/package/address-validator
+        var geocode;
+        addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key
+        addressValidator.validate(req.body.location, function(err, validAddresses, inexactMatches, geocodingResponse) {
+            if(err) {
+                res.json({success: false, message: 'Invalid location'});
+                return;
+            }
+
+            geocode = geocodingResponse;
+        });
+
         var events = db.collection('events');
         var invitesColl = db.collection('invites');
 
@@ -37,7 +53,7 @@ var create = function(req, res) {
             title: req.body.title,
             dateStart: req.body.dateStart,
             dateEnd: req.body.dateEnd,
-            location: req.body.location,
+            location: geocode,
             theme: req.body.theme
         };
         events.insert(myEvent, function(err, result) {
@@ -123,7 +139,7 @@ var create = function(req, res) {
             });
 
         });
-
+        
     });
 };
 
