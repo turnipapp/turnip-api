@@ -35,7 +35,7 @@ var create = function(req, res) {
         //Validates the address through Google Maps API
         //API found here: https://www.npmjs.com/package/address-validator
         var geocode;
-        addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key
+        addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key (Kyle's key)
         addressValidator.validate(req.body.location, function(err, validAddresses, inexactMatches, geocodingResponse) {
             if(err) {
                 res.json({success: false, message: 'Invalid location'});
