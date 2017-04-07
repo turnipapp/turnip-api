@@ -6,7 +6,7 @@ var url         = process.env.MONGO_URL || config.database;
 describe("Setup", function() {
     
     /* DELETES 'users' COLLECTION */
-    /*
+    
     it("Cleaning user collection...", function() {
         MongoClient.connect(url, function(err, db) {
             db.collection('users', function(err, collection) {
@@ -14,7 +14,7 @@ describe("Setup", function() {
             });
         });
     });
-    */
+    
 
 
 });
