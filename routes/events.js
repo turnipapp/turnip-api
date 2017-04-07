@@ -6,7 +6,7 @@ var url         = process.env.MONGO_URL || config.database;
 var addressValidator = require('address-validator');
 var Address = addressValidator.Address;
 var _ = require('underscore');
-
+var fs = require('fs');
 
 
 
@@ -122,7 +122,6 @@ var create = function(req, res) {
 
                 Async.each(invresult.ops, function(invite, callback) {
                   if (invite == invresult.ops[invresult.ops.length - 1]) {
-                    console.log("host");
                   } else {
                     var users = db.collection('users');
 
@@ -130,13 +129,16 @@ var create = function(req, res) {
                       var email = user.email;
                       var url = "http://www.turnip.com/invite/" + invite._id;
                       var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+                      var html = fs.readFileSync("./routes/emailTemplate.html", "utf8");
+                      html = html.replace("REPLACE_LINK_HERE", url);
+
                       var mailOptions = {
                         from: '"Turnip Events" <turnipinvites@gmail.com>',
                         to: email,
                         subject: "You've been invited to an event on Turnip!",
-                        text: message
-                      }
-                      console.log(mailOptions);
+                        text: message,
+                        html: html
+                      };
                       transporter.sendMail(mailOptions);
                     });
                   }
@@ -145,7 +147,6 @@ var create = function(req, res) {
 
 
             });
-            console.log(result._id);
         });
 
     });

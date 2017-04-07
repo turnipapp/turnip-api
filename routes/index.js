@@ -56,11 +56,12 @@ router.delete('/event/:id', event.deleteOne);
 router.post('/posts/:id', posts.create);
 router.put('/posts/:post_id', posts.edit);
 router.delete('/posts/:post_id', posts.delete);
+router.post('/posts/:id/comment', posts.addComment);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
 /* Themes */
-router.get('/themes', themes.getAll)
+router.get('/themes', themes.getAll);
 router.get('/themes/:id', themes.getOne);
 
 /* Account */
@@ -76,6 +77,6 @@ router.get('/user/:type/:data', user.getOne);
 //router.post('/uploadimage', upload.uploadimage);
 
 /* Notifications */
-router.get('/notifications/get', notifications.get)
+router.get('/notifications/get', notifications.get);
 
 module.exports = router;
