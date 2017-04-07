@@ -54,8 +54,8 @@ router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
-router.put('/posts/:id', posts.edit);
-router.delete('/posts/:id', posts.delete);
+router.put('/posts/:post_id', posts.edit);
+router.delete('/posts/:post_id', posts.delete);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
