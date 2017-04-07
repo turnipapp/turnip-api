@@ -49,7 +49,7 @@ var create = function(req, res) {
             var notification = {
                 type: 1,
                 seen: false,
-                message: 'You have been invited to a new event!',
+                message: 'You have been invited to the event ' + req.body.title + ' at ' + req.body.dateStart,
                 timestamp: new Date()
             }
             notifications.push(notification);
