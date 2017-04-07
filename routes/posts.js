@@ -148,7 +148,13 @@ var delete_post = function(req, res) {
                     return;
                 }
 
-                posts.remove({'_id': req.params.post_id});
+                posts.remove({_id: ObjectID(req.params.post_id)}, function(err, result) {
+                    if(err) {
+                        res.json({success: false, message: 'Database error.'});
+                    }
+
+                    res.json({success: true, message: 'Successfully deleted post.'});
+                });
             });
         })
     });
