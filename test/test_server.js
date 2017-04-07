@@ -121,12 +121,12 @@ describe('Register User', function() {
             res.body.should.have.property('id');
             done();
         });
-    })
+    });
 
-    it('should try to change account details but responds with an error because wrong password given on /account/update PUT', function(done) {
+    it('should fail to update account info because wrong password given on /account/update PUT', function(done) {
         server
         .put('/account/update')
-        .send({email: 'newemail@gmail.com', firstName: 'FIRSTNAME', lastName: 'LASTNAME', password: 'password'})
+        .send({email: 'newemail@gmail.com', firstName: 'FIRSTNAME', lastName: 'LASTNAME', password: 'notcorrect'})
         .expect('Content-type', /json/)
         .set('token', token)
         .expect(200)
