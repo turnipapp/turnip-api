@@ -67,7 +67,7 @@ router.get('/themes/:id', themes.getOne);
 /* Account */
 router.get('/account', account.getAccount);
 //router.get('/account/public', account.getPublicAccount);
-router.post('/account/update', account.update);
+router.put('/account/update', account.update);
 
 /* Users */
 router.get('/user/:type/:data', user.getOne);
