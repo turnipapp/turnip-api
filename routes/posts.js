@@ -83,17 +83,6 @@ var edit = function(req, res) {
         var posts = db.collection('posts');
         var events = db.collection('events');
 
-        var userId = req.decoded._id;
-        var post = posts.findOne({'_id': new ObjectID(req.params.id)});
-        var postCreatorId = post.userId;
-
-        var event = events.findOne({'_id': new ObjectID(post.eventId)});
-        var hostId = event.owner;
-
-        if(!(userId.equals(hostId) || userId.equals(postCreatorId))) {
-            res.json({success: false, message: 'User does not have permission to edit post'});
-        }
-
         posts.update({"_id": new ObjectID(req.params.post_id)}, {$set: {
             text: req.body.text
         }}, function(err, result) {
@@ -110,6 +99,18 @@ var edit = function(req, res) {
 var delete_post = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
+
+        var userId = new ObjectID(req.decoded._id);
+        var post = posts.findOne({'_id': new ObjectID(req.params.post_id)});
+        var postCreatorId = new ObjectID(post.userId);
+
+        var event = events.findOne({'_id': new ObjectID(post.eventId)});
+        var hostId = new ObjectID(event.owner);
+
+        if(!(userId.equals(hostId) || userId.equals(postCreatorId))) {
+            res.json({success: false, message: 'User does not have permission to edit post'});
+            return;
+        }
 
         posts.remove({_id: ObjectID(req.body.postID)}, function(err, result) {
             if(err) {
