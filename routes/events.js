@@ -117,38 +117,40 @@ var create = function(req, res) {
                 }
                 res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
 
-
-                Async.each(invresult.ops, function(invite, callback) {
-                  if (invite == invresult.ops[invresult.ops.length - 1]) {
-                  } else {
-                    var users = db.collection('users');
-
-                    users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
-                      var email = user.email;
-                      var url = "http://localhost:3000/invite/" + invite._id;
-                      var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
-                      var html = fs.readFileSync("./routes/emailTemplate.html", "utf8");
-                      html = html.replace("REPLACE_LINK_HERE", url);
-
-                      var mailOptions = {
-                        from: '"Turnip Events" <turnipinvites@gmail.com>',
-                        to: email,
-                        subject: "You've been invited to an event on Turnip!",
-                        text: message,
-                        html: html
-                      };
-                      transporter.sendMail(mailOptions);
-                    });
-                  }
-
-                });
-
+                sendInvites(invresult.ops, db);
 
             });
         });
 
     });
 };
+
+function sendInvites(invites, db) {
+  Async.each(invites, function(invite, callback) {
+    if (invite == invites[invites.length - 1]) {
+    } else {
+      var users = db.collection('users');
+
+      users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
+        var email = user.email;
+        var url = "http://localhost:3000/invite/" + invite._id;
+        var message = "You've been invited to an event on Turnip!\n Follow the link to RSVP: " + url;
+        var html = fs.readFileSync("./routes/emailTemplate.html", "utf8");
+        html = html.replace("REPLACE_LINK_HERE", url);
+
+        var mailOptions = {
+          from: '"Turnip Events" <turnipinvites@gmail.com>',
+          to: email,
+          subject: "You've been invited to an event on Turnip!",
+          text: message,
+          html: html
+        };
+        transporter.sendMail(mailOptions);
+      });
+    }
+
+  });
+}
 
 /************************************
  *
