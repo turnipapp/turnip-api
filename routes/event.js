@@ -4,6 +4,7 @@ var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 // var appList        = require('./appList');
 var fs          = require('fs');
+var Async       = require('async');
 
 var getOne = function(req, res) {
     MongoClient.connect(url, function(err, db) {
@@ -234,6 +235,50 @@ var deleteOne = function(req, res) {
     });
 };
 
+var getInviteStatus = function(req, res){
+  MongoClient.connect(url, function(err, db) {
+    var events = db.collection('events');
+    var users = db.collection('users');
+    var invites = db.collection('invites');
+    var yes = [];
+    var no = [];
+    var maybe = [];
+    var pending = [];
+
+
+    invites.find({"eventId": new ObjectID(req.params.id)}).toArray(function(err, eventInvites) {
+      if (!eventInvites) {
+        res.json({success: false, message: 'no event invites found'});
+      } else{
+          Async.each(eventInvites, function(invite, callback){
+
+              users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
+
+                if (!user) {
+                  res.json({success: false, message: 'no user found'});
+                } else if (invite.response == 'no') {
+                    no.push(user.firstName + " " + user.lastName);
+                } else if (invite.response == 'yes') {
+                    yes.push(user.firstName + " " + user.lastName);
+                } else if (invite.response == 'maybe') {
+                    maybe.push(user.firstName + " " + user.lastName);
+                } else if (invite.response == 'pending') {
+                    pending.push(user.firstName + " " + user.lastName);
+                }
+                callback();
+              });
+
+          }, function(err) {
+              res.json({success: true, yes: yes, no: no, maybe: maybe, pending: pending});
+        });
+
+
+        }
+    });
+  });
+};
+
+
 var functions = {
     getOne: getOne,
     getRole: getRole,
@@ -242,7 +287,8 @@ var functions = {
     addOneApp: addApp,
     deleteOneApp: deleteApp,
     getLocation: getLocation,
-    deleteOne: deleteOne
+    deleteOne: deleteOne,
+    getInviteStatus: getInviteStatus
 };
 
 module.exports = functions;
