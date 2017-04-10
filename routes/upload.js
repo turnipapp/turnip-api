@@ -37,14 +37,15 @@ var uploadimage = function(req, res) {
                 userId: new ObjectID(req.decoded._id),
                 eventId: req.body.eventId,
                 timestamp: new Date(),
-                parentId: req.body.parentId
+                comments: [],
+                isImage: true
             }
 
             posts.insert(postObj, function(err, result) {
-            console.log(result);
+            console.log("RESULT\n\n" + postObj._id + " end Result \n\n");
 
             var data = {
-
+                Key: ''+postObj._id,
                 Body: fs.createReadStream(req.file.path)
             };
                 console.log(data);

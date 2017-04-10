@@ -73,7 +73,7 @@ router.get('/user/:type/:data', user.getOne);
 
 
 /* Upload  (TEST) */
-router.post('/upload', upload.uploadimage);
+router.put('/upload', upload.uploadimage);
 
 /* Notifications */
 router.get('/notifications/get', notifications.get)
