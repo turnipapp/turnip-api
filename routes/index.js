@@ -9,7 +9,7 @@ var invite      = require('./invite');
 var themes      = require('./themes');
 var user        = require('./user');
 var event       = require('./event');
-//var upload      = require('./upload.js');
+var upload      = require('./upload.js');
 var posts       = require('./posts');
 var notifications  = require('./notifications');
 
@@ -20,6 +20,9 @@ var notifications  = require('./notifications');
 /* Auth */
 router.post('/auth/login', auth.login);
 router.post('/auth/signup', auth.signup);
+router.put('/invite/:id', invite.changeStatus );
+
+router.get('/invite/:id', invite.getEventInfo);
 
 /********************
  * PROTECTED ROUTES *
@@ -37,7 +40,6 @@ router.put('/event/response', events.response);
 /* Create Event*/
 router.post('/event', events.create );
 router.put('/invite', invite.invite );
-router.put('/invite/:id', invite.changeStatus );
 
 /* Events */
 router.get('/event/:id', event.getOne);
@@ -48,31 +50,33 @@ router.get('/event/:id/role', event.getRole);
 router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
 router.get('/event/:id/getLocation', event.getLocation);
+router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
 router.post('/posts/:id', posts.create);
-router.put('/posts/:id', posts.edit);
-router.delete('/posts/:id', posts.delete);
+router.put('/posts/:post_id', posts.edit);
+router.delete('/posts/:post_id', posts.delete);
+router.post('/posts/:id/comment', posts.addComment);
 
 
 // POST turnip.com/posts/3rhjgworibip {post content}
 /* Themes */
-router.get('/themes', themes.getAll)
+router.get('/themes', themes.getAll);
 router.get('/themes/:id', themes.getOne);
 
 /* Account */
 router.get('/account', account.getAccount);
 //router.get('/account/public', account.getPublicAccount);
-router.post('/account/update', account.update);
+router.put('/account/update', account.update);
 
 /* Users */
 router.get('/user/:type/:data', user.getOne);
 
 
 /* Upload  (TEST) */
-//router.post('/uploadimage', upload.uploadimage);
+router.put('/upload', upload.uploadimage);
 
 /* Notifications */
-router.get('/notifications/get', notifications.get)
+router.get('/notifications/get', notifications.get);
 
 module.exports = router;

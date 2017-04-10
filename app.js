@@ -30,7 +30,7 @@ app.use(logger('dev'));
  app.use(bodyParser.json());
 
 
- app.use(multer({ dest: 'tempfiles/'}).single('name'));
+ app.use(multer({ dest: 'tempfiles/'}).single('photo'));
 /* External Routes
  * Abstratcs out routes
  */

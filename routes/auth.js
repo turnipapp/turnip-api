@@ -19,7 +19,6 @@ var login = function(req, res) {
                 } else {
                     var user = docs[0];
                     bcrypt.compare(req.body.password, user.password, function(err, match) {
-                        console.log(req.body.password);
                         if(!match) {
                             res.json({success: false, message: 'Incorrect password'});
                         } else {

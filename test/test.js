@@ -6,3 +6,6 @@ describe('Array', function() {
     });
   });
 });
+
+require('./setup.js')
+require('./test_server.js')
