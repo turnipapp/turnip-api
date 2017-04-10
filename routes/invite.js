@@ -46,7 +46,8 @@ var inviteUser = function (req, res) {
                     type: 1,
                     seen: false,
                     message: 'You have been invited to a new event!',
-                    timestamp: new Date.now()
+                    timestamp: new Date.now(),
+                    eventId: req.body.eventID
                 };
                 notifications.push(notification);
 

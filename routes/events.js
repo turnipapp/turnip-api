@@ -73,7 +73,8 @@ var create = function(req, res) {
                 type: 1,
                 seen: false,
                 message: 'You have been invited to the event ' + req.body.title + ' at ' + req.body.dateStart,
-                timestamp: new Date()
+                timestamp: new Date(),
+                eventId: myEvent._id
             };
             notifications.push(notification);
 
