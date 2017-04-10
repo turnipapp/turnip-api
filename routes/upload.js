@@ -42,13 +42,11 @@ var uploadimage = function(req, res) {
             }
 
             posts.insert(postObj, function(err, result) {
-            console.log("RESULT\n\n" + postObj._id + " end Result \n\n");
 
             var data = {
                 Key: ''+postObj._id,
                 Body: fs.createReadStream(req.file.path)
             };
-                console.log(data);
             s3Bucket.putObject(data, function (err) {
                 if (err) {
                     res.json({message:'Error uploading data: '});
