@@ -2,15 +2,31 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
+var Async       = require('async');
 
 var getAll = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
+        var users = db.collection('users');
 
         posts.find({eventId: req.params.id}).toArray(function(err, docs) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
-            res.json({success: true, posts: sorted});
+            Async.each(sorted, function(post, callback){
+
+                users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
+                  if (!user) {
+                    res.json({success: false, message: 'no user found'});
+                  } else {
+                    post.name = user.firstName + " " + user.lastName;
+                  }
+                  callback();
+                });
+
+            }, function(err) {
+                res.json({success: true, posts: sorted});
+          });
+
         });
     });
 };
