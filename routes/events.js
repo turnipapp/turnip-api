@@ -90,7 +90,7 @@ var create = function(req, res) {
                 var obj = {
                     userId: new ObjectID(req.body.invites[i].id),
                     eventId: result.ops[0]._id,
-                    response: 'no',
+                    response: 'pending',
                     username: req.body.invites[i].username,
                     notifications: notifications
                 };

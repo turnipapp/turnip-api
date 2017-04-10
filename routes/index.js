@@ -50,6 +50,8 @@ router.get('/event/:id/role', event.getRole);
 router.get('/event/:id/tabs', event.getTabs);
 router.get('/posts/:id', posts.getAll);
 router.get('/event/:id/getLocation', event.getLocation);
+router.get('/event/:id/getInviteStatus', event.getInviteStatus);
+
 router.delete('/event/:id', event.deleteOne);
 
 /* Posts */
