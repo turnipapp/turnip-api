@@ -13,6 +13,12 @@ var upload = multer({dest: 'tempfiles/'}).single('photo');
 // POST req.body.imageBinary
 var uploadimage = function(req, res) {
             //TODO: Make private images that only buffer for auth
+    MongoClient.connect(url, function (err, db) {
+    if (err) {
+        res.json({success: false, message: "Error accessing DB"});
+        return;
+    }
+
     try {
         var path = "";
         if (!fs.existsSync('tempfiles/')){
@@ -21,60 +27,47 @@ var uploadimage = function(req, res) {
         upload (req, res, function (err) {
             if (err) {
                 res.json ({success: false, message: "Error uploading image"});
-                return  
+                return
             }
 
-            
-            
+            var posts = db.collection('posts');
+
+            var postObj = {
+                text: req.body.text,
+                userId: new ObjectID(req.decoded._id),
+                eventId: req.body.eventId,
+                timestamp: new Date(),
+                parentId: req.body.parentId
+            }
+
+            posts.insert(postObj, function(err, result) {
+            console.log(result);
+
             var data = {
-                Key: req.file.path, 
+
                 Body: fs.createReadStream(req.file.path)
             };
                 console.log(data);
             s3Bucket.putObject(data, function (err) {
-                if (err) { 
-                    res.json({message:'Error uploading data: '}); 
+                if (err) {
+                    res.json({message:'Error uploading data: '});
                     return;
                 } else {
                     res.json({message:'Succesfully uploaded the image!'});
                     return;
                 }
             })
-        });
-        
-            /* {
-            /*            fs.readFile(req.file.image.path, function (err, data) {
-                var dirname = 'tempfiles/'
-                var newPath = dirname + req.body.filename;
-            });
-            fs.writeFile(newPath, data, function (err) {
-                if (err) 
-                    return res.end('Error uploading files to node server');
-            });
-/*        
-        var type;
-        switch (req.body.type) {
-            case 'jpeg': type = 'image/jpeg'; break;
-            case 'png': type = 'image/png'; break; 
-        }
-        */   /* 
-        var data = {
-            Key: req.body.imageName, 
-            Body: fs.createReadStream(path),
-        };
-        s3Bucket.putObject(data, function(err, data){
-            console.log(data);
-            
-            if (err) { 
-                res.json({message:'Error uploading data: '}); 
-            } else {
-                res.json({message:'Succesfully uploaded the image!'});
-            }
-        })*/
+
+
+
+            fs.unlinkSync(req.file.path);
+        })
+      })
     }catch (err) {
         res.json({message: '' + err});
     }
-    };
+    });
+};
 
 var functions = {
     uploadimage: uploadimage

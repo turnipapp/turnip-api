@@ -37,14 +37,14 @@ var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
 
+
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
             eventId: req.body.eventId,
             timestamp: new Date(),
             parentId: req.body.parentId
-
-        };
+        }
 
         /*
           Notifies all invited users (given their preferences) of new post
@@ -101,7 +101,7 @@ var edit = function(req, res) {
                 breakFunction = true;
                 return;
             }
-            
+
             var userId = new ObjectID(req.decoded._id);
             var postCreatorId = new ObjectID(post.userId);
 
@@ -110,7 +110,7 @@ var edit = function(req, res) {
                 breakFunction = true;
             }
         });
-        
+
         if(breakFunction){
             return;
         }
