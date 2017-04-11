@@ -12,22 +12,27 @@ var getAll = function(req, res) {
         posts.find({eventId: req.params.id}).toArray(function(err, docs) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
-            Async.each(sorted, function(post, callback){
-                post.likes = post.likers.length;
-                post.likers = [];
-                users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
-                  if (!user) {
-                    res.json({success: false, message: 'no user found'});
-                  } else {
-                    post.name = user.firstName + " " + user.lastName;
-                  }
-                  callback();
+            if (docs.length > 0) {
+                Async.each(sorted, function(post, callback){
+                    if (post.likers) {
+                        post.likes = post.likers.length;
+                    }
+                    post.likers = [];
+                    users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
+                      if (!user) {
+                        res.json({success: false, message: 'no user found'});
+                      } else {
+                        post.name = user.firstName + " " + user.lastName;
+                      }
+                      callback();
+                    });
+
+                }, function(err) {
+                    res.json({success: true, posts: sorted});
                 });
-
-            }, function(err) {
-                res.json({success: true, posts: sorted});
-          });
-
+            } else {
+                res.json({success: true, posts: []});
+            }
         });
     });
 };
@@ -43,7 +48,8 @@ var create = function(req, res) {
             timestamp: new Date(),
             comments: [],
             isImage: false,
-            likes: 0
+            likes: 0,
+            likers: []
         };
 
         /*
