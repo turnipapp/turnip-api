@@ -100,6 +100,16 @@ var getTabs = function(req, res) {
                     });
                 }
 
+                var now = new Date();
+                if (new Date(e.dateEnd) < now) {
+                    tabs.push({
+                        name: 'Memories',
+                        ref: '.memories({id: id})',
+                        url: '/memories',
+                        appState: 'memories'
+                    });
+                }
+
                 res.json({success: true, tabs: tabs});
             });
 
