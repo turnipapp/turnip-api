@@ -13,7 +13,8 @@ var getAll = function(req, res) {
             var sorted = sortByKey(docs, "timestamp");
             sorted.reverse();
             Async.each(sorted, function(post, callback){
-
+                post.likes = post.likers.length;
+                post.likers = [];
                 users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
                   if (!user) {
                     res.json({success: false, message: 'no user found'});
@@ -41,7 +42,8 @@ var create = function(req, res) {
             eventId: req.body.eventId,
             timestamp: new Date(),
             comments: [],
-            isImage: false
+            isImage: false,
+            likes: 0
         };
 
         /*
@@ -172,12 +174,36 @@ var addComment = function(req, res) {
     });
 };
 
+var like = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+        var likeObj = {
+            userId: req.decoded._id,
+            timestamp: new Date()
+        };
+
+        posts.update({"_id": new ObjectID(req.params.id)}, { $push: {likers: likeObj } }, function (err, update) {
+            if (err) {
+                res.json({success: false});
+            }
+
+            posts.findOne({"_id": new ObjectID(req.params.id)}, function (err, doc) {
+                if (err) {
+                    res.json({success: false});
+                }
+                res.json({success: true, likes: doc.likers.length});
+            });
+        });
+    });
+};
+
 var functions = {
     getAll: getAll,
     create: create,
     edit: edit,
     delete: delete_post,
-    addComment: addComment
+    addComment: addComment,
+    like: like
 };
 
 function sortByKey(array, key) {
