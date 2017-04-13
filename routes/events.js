@@ -97,8 +97,9 @@ var create = function(req, res) {
 
                 //Updates the number of events a user has been invited to.
                 users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
-                  if(err) {
+                  if(err || !user) {
                     res.json({success: false, message: 'User database error'});
+                    return;
                   } else {
                     if (isNaN(user.eventsInvited)) {
                       user.eventsInvited = 0;
