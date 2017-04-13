@@ -49,7 +49,8 @@ var create = function(req, res) {
             comments: [],
             isImage: false,
             likes: 0,
-            likers: []
+            likers: [],
+            score: 0
         };
 
         /*
@@ -161,7 +162,7 @@ var delete_post = function(req, res) {
 var addComment = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
-
+        var score;
         var comment = {
             author: req.decoded._id,
             body: req.body.comment,
@@ -172,6 +173,10 @@ var addComment = function(req, res) {
 
         posts.findOne({"_id": new ObjectID(req.params.id)}, function(err, doc) {
             if(doc) {
+                score = Math.ceil(Math.sqrt(doc.likers.length)) + doc.comments.length;
+                posts.update({"_id": new ObjectID(req.params.id)}, { $set: {score: score}}, function (err, update) {
+
+                });
                 posts.update({"_id": new ObjectID(req.params.id)}, { $push: {comments: comment}}, function (err, update) {
                     res.json({success: true});
                 });
@@ -183,6 +188,7 @@ var addComment = function(req, res) {
 var like = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
+        var score;
         var likeObj = {
             userId: req.decoded._id,
             timestamp: new Date()
@@ -196,8 +202,14 @@ var like = function(req, res) {
             posts.findOne({"_id": new ObjectID(req.params.id)}, function (err, doc) {
                 if (err) {
                     res.json({success: false});
+                } else{
+                  score = Math.ceil(Math.sqrt(doc.likers.length)) + doc.comments.length;
+                  posts.update({"_id": new ObjectID(req.params.id)}, { $set: {score: score}}, function (err, update) {
+
+                  });
+                  res.json({success: true, likes: doc.likers.length});
                 }
-                res.json({success: true, likes: doc.likers.length});
+
             });
         });
     });
