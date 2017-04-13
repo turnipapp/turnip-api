@@ -173,7 +173,7 @@ var addComment = function(req, res) {
 
         posts.findOne({"_id": new ObjectID(req.params.id)}, function(err, doc) {
             if(doc) {
-                score = Math.ceil(Math.sqrt(docs.likers.length)) + doc.comments.length;
+                score = Math.ceil(Math.sqrt(doc.likers.length)) + doc.comments.length;
                 posts.update({"_id": new ObjectID(req.params.id)}, { $set: {score: score}}, function (err, update) {
 
                 });
@@ -203,7 +203,7 @@ var like = function(req, res) {
                 if (err) {
                     res.json({success: false});
                 } else{
-                  score = Math.ceil(Math.sqrt(docs.likers.length)) + doc.comments.length;
+                  score = Math.ceil(Math.sqrt(doc.likers.length)) + doc.comments.length;
                   posts.update({"_id": new ObjectID(req.params.id)}, { $set: {score: score}}, function (err, update) {
 
                   });
