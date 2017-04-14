@@ -60,7 +60,7 @@ var create = function(req, res) {
         var invitesColl = db.collection('invites');
 
         geocoder.geocode(req.body.location, function (results, status) {
-          if (status != "OK") {
+            if (status.status != "OK") {
             res.json({success:false, message: "Invalid Location"});
             return;
           }
