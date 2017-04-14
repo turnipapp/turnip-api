@@ -12,6 +12,7 @@ var event       = require('./event');
 var upload      = require('./upload.js');
 var posts       = require('./posts');
 var notifications  = require('./notifications');
+var spotify     = require('./spotify');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -81,5 +82,8 @@ router.put('/upload', upload.uploadimage);
 
 /* Notifications */
 router.get('/notifications/get', notifications.get);
+
+/* Spotify */
+router.post('/spotify/:eventId', spotify.createPlaylist);
 
 module.exports = router;
