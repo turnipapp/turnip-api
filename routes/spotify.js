@@ -43,7 +43,7 @@ var search = function(req, res) {
                     track: items[i].name,
                     artist: items[i].artists[0].name,
                     album: items[i].album.name,
-                    id: items[i].id
+                    songId: items[i].id
                 }
             }
 
@@ -70,17 +70,13 @@ var addSong = function(req, res) {
                 res.json({success: false, message: "Database error."});
             }
             else{
-                res.json(getSongs());
+                res.json({songs: songs});
             }
         });
 
 
     });
 };
-
-function getSongs(){
-    
-}
 
 var functions = {
     createPlaylist,
