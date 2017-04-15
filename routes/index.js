@@ -86,5 +86,6 @@ router.get('/notifications/get', notifications.get);
 /* Spotify */
 router.post('/spotify/:eventId', spotify.createPlaylist);
 router.get('/spotify/search/:searchQuery', spotify.search);
+router.post('/spotify', spotify.addSong);
 
 module.exports = router;

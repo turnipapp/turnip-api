@@ -3,9 +3,9 @@ var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var SpotifyWebApi = require('spotify-web-api-node');
-var Async       = require('async');
 
 var spotifyApi = new SpotifyWebApi();
+// API found here: https://github.com/thelinmichael/spotify-web-api-node
 
 
 var createPlaylist = function(req, res) {
@@ -50,11 +50,42 @@ var search = function(req, res) {
             res.json({success: true, results: results});
         }
     });
+}
+
+var addSong = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var playlists = db.collection('playlists');
+
+        var songs = playlists.findOne({'eventId': req.body.eventId}).songs;
+
+        songs.push({
+            track: req.body.track,
+            artist: req.body.artist,
+            album: req.body.album,
+            id: req.body.songId
+        });
+
+        playlists.update({'eventId': req.body.eventId}, {$set: {songs: songs}}, function(err, result) {
+            if(err) {
+                res.json({success: false, message: "Database error."});
+            }
+            else{
+                res.json(getSongs());
+            }
+        });
+
+
+    });
 };
+
+function getSongs(){
+    
+}
 
 var functions = {
     createPlaylist,
-    search
+    search,
+    addSong
 };
 
 
