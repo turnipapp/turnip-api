@@ -56,25 +56,26 @@ var addSong = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var playlists = db.collection('playlists');
 
-        var songs = playlists.findOne({'eventId': req.body.eventId}).songs;
+        var playlistObj = playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {            
+            
+            var songs = playlist.songs;
+            
+            songs.push({
+                track: req.body.track,
+                artist: req.body.artist,
+                album: req.body.album,
+                id: req.body.songId
+            });
 
-        songs.push({
-            track: req.body.track,
-            artist: req.body.artist,
-            album: req.body.album,
-            id: req.body.songId
+            playlists.update({'eventId': req.params.eventId}, {$set: {songs: songs}}, function(err, result) {
+                if(err) {
+                    res.json({success: false, message: "Database error."});
+                }
+                else{
+                    res.json({songs: songs});
+                }
+            });
         });
-
-        playlists.update({'eventId': req.body.eventId}, {$set: {songs: songs}}, function(err, result) {
-            if(err) {
-                res.json({success: false, message: "Database error."});
-            }
-            else{
-                res.json({songs: songs});
-            }
-        });
-
-
     });
 };
 
