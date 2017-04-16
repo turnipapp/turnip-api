@@ -56,25 +56,29 @@ var addSong = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var playlists = db.collection('playlists');
 
-        var playlistObj = playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {            
-            
-            var songs = playlist.songs;
-            
-            songs.push({
-                track: req.body.track,
-                artist: req.body.artist,
-                album: req.body.album,
-                songId: req.body.songId,
-                userId: req.decoded._id
-            });
+        var playlistObj = playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {     
 
-            playlists.update({'eventId': req.params.eventId}, {$set: {songs: songs}}, function(err, result) {
-                if(err) {
-                    res.json({success: false, message: "Database error."});
-                }
-                else{
-                    res.json({songs: songs});
-                }
+            var users = db.collection('users');
+            var userId = req.decoded._id;
+            users.findOne({'_id': new ObjectID(userId)}, function(err, user) {
+                var songs = playlist.songs;
+
+                songs.push({
+                    track: req.body.track,
+                    artist: req.body.artist,
+                    album: req.body.album,
+                    songId: req.body.songId,
+                    userName: user.firstName + ' ' + user.lastName
+                });
+
+                playlists.update({'eventId': req.params.eventId}, {$set: {songs: songs}}, function(err, result) {
+                    if(err) {
+                        res.json({success: false, message: "Database error."});
+                    }
+                    else{
+                        res.json({songs: songs});
+                    }
+                });
             });
         });
     });
