@@ -7,6 +7,7 @@ var addressValidator = require('address-validator');
 var Address = addressValidator.Address;
 var _ = require('underscore');
 var fs = require('fs');
+var geocoder    = require('geocoder');
 
 
 
@@ -41,7 +42,10 @@ var create = function(req, res) {
 
         //Validates the address through Google Maps API
         //API found here: https://www.npmjs.com/package/address-validator
+
         var geocode;
+
+/*
         addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key (Kyle's key)
         addressValidator.validate(req.body.location, function(err, validAddresses, inexactMatches, geocodingResponse) {
             if(err) {
@@ -51,16 +55,25 @@ var create = function(req, res) {
 
             geocode = geocodingResponse;
         });
-
+*/
         var events = db.collection('events');
         var invitesColl = db.collection('invites');
+
+        geocoder.geocode(req.body.location, function (results, status) {
+            if (status.status != "OK") {
+            res.json({success:false, message: "Invalid Location"});
+            return;
+          }
+
+          var lat = status.results[0].geometry.location.lat;
+          var lon = status.results[0].geometry.location.lon;
 
         var myEvent = {
             owner: new ObjectID(req.decoded._id),
             title: req.body.title,
             dateStart: req.body.dateStart,
             dateEnd: req.body.dateEnd,
-            location: geocode,
+            location: status,
             theme: req.body.theme
         };
         events.insert(myEvent, function(err, result) {
@@ -123,6 +136,7 @@ var create = function(req, res) {
 
             });
         });
+      });
 
     });
 };

@@ -13,6 +13,7 @@ var upload      = require('./upload.js');
 var posts       = require('./posts');
 var notifications  = require('./notifications');
 var spotify     = require('./spotify');
+var weather     = require('./weather');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -90,5 +91,7 @@ router.get('/spotify/search/:searchQuery', spotify.search);
 router.get('/spotify/:eventId', spotify.getSongs);
 router.get('/spotify/:eventId/generateString', spotify.generateString);
 
+/* Weather */
+router.get('/weather/get/:eventId', weather.get);
 
 module.exports = router;
