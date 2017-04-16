@@ -43,7 +43,8 @@ var search = function(req, res) {
                     track: items[i].name,
                     artist: items[i].artists[0].name,
                     album: items[i].album.name,
-                    songId: items[i].id
+                    songId: items[i].id,
+                    userId: req.decoded._id
                 }
             }
 
