@@ -80,10 +80,26 @@ var addSong = function(req, res) {
     });
 };
 
+var getSongs = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var playlists = db.collection('playlists');
+
+        playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {
+            if(err) {
+                res.json({success: false, message: "Database error."});
+            }
+            else {
+                res.json(playlist.songs);
+            }
+        });
+    });
+};
+
 var functions = {
     createPlaylist,
     search,
-    addSong
+    addSong,
+    getSongs
 };
 
 
