@@ -149,12 +149,30 @@ var generateString = function(req, res) {
     });
 };
 
+var deleteSong = function (req, res) {
+    var eventId = req.params.eventId;
+    var songId = req.params.songId;
+
+    MongoClient.connect(url, function(err, db) {
+        var playlists = db.collection('playlists');
+
+        playlists.update({'eventId': new ObjectID(eventId)}, { $pull: {songs: {songId: songId}}}, function (err, update) {
+            if (err) {
+                res.json({success: false});
+            } else {
+                res.json({success: true});
+            }
+        });
+    });
+};
+
 var functions = {
     createPlaylist: createPlaylist,
     search: search,
     addSong: addSong,
     getSongs: getSongs,
-    generateString: generateString
+    generateString: generateString,
+    delete: deleteSong
 };
 
 
