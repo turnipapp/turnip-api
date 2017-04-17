@@ -90,6 +90,7 @@ router.post('/spotify/:eventId/addSong', spotify.addSong);
 router.get('/spotify/search/:searchQuery', spotify.search);
 router.get('/spotify/:eventId', spotify.getSongs);
 router.get('/spotify/:eventId/generateString', spotify.generateString);
+router.delete('/spotify/:eventId/:songId', spotify.delete);
 
 /* Weather */
 router.get('/weather/get/:eventId', weather.get);
