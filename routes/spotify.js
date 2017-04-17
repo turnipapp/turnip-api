@@ -25,7 +25,7 @@ var createPlaylist = function(req, res) {
                 res.json({success: true, message: "Successfully created playlist."});
             }
         });
-    }); 
+    });
 };
 
 var search = function(req, res) {
@@ -33,7 +33,7 @@ var search = function(req, res) {
         if(err) {
             res.json({success: false, message: "Spotify search error."});
         }
-        else {            
+        else {
 
             var items = data.body.tracks.items;
             var results = [];
@@ -44,39 +44,65 @@ var search = function(req, res) {
                     artist: items[i].artists[0].name,
                     album: items[i].album.name,
                     songId: items[i].id
-                }
+                };
             }
 
             res.json({success: true, results: results});
         }
     });
+};
+
+// Creates a playlist if need be, otherwise returns the event's playlist
+function verifyPlaylist(eventId, callback) {
+    MongoClient.connect(url, function(err, db) {
+        var playlists = db.collection('playlists');
+
+        playlists.findOne({'eventId': new ObjectID(eventId)}, function(err, playlist) {
+            if (err) {
+                callback(err, NULL);
+                return;
+            }
+            if ( typeof playlist !== 'undefined' && playlist ) {
+                callback(false, playlist);
+            } else {
+                var playlistObj = {
+                    eventId: new ObjectID(eventId),
+                    songs: []
+                };
+
+                playlists.insert(playlistObj, function(err, res) {
+                    if (err) {
+                        callback(err, NULL);
+                    } else {
+                        callback(false, res.ops[0]);
+                    }
+                });
+            }
+        });
+    });
 }
 
 var addSong = function(req, res) {
     MongoClient.connect(url, function(err, db) {
-        var playlists = db.collection('playlists');
-
-        var playlistObj = playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {     
-
+        verifyPlaylist(req.params.eventId, function(err, playlist) {
             var users = db.collection('users');
             var userId = req.decoded._id;
             users.findOne({'_id': new ObjectID(userId)}, function(err, user) {
-                var songs = playlist.songs;
-
-                songs.push({
+                var songObj = {
                     track: req.body.track,
                     artist: req.body.artist,
                     album: req.body.album,
                     songId: req.body.songId,
                     userName: user.firstName + ' ' + user.lastName
-                });
+                };
 
-                playlists.update({'eventId': req.params.eventId}, {$set: {songs: songs}}, function(err, result) {
+                var playlists = db.collection('playlists');
+                playlists.update({'eventId': new ObjectID(req.params.eventId)}, {$push: {songs: songObj}}, function(err, result) {
                     if(err) {
                         res.json({success: false, message: "Database error."});
                     }
                     else{
-                        res.json({songs: songs});
+                        res.json({success: true});
                     }
                 });
             });
@@ -85,17 +111,11 @@ var addSong = function(req, res) {
 };
 
 var getSongs = function(req, res) {
-    MongoClient.connect(url, function(err, db) {
-        var playlists = db.collection('playlists');
-
-        playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {
-            if(err) {
-                res.json({success: false, message: "Database error."});
-            }
-            else {
-                res.json(playlist.songs);
-            }
-        });
+    verifyPlaylist(req.params.eventId, function(err, playlist) {
+        if (err) {
+            res.json({success: false, message: err});
+        }
+        res.json({success: true, songs: playlist.songs});
     });
 };
 
@@ -130,11 +150,11 @@ var generateString = function(req, res) {
 };
 
 var functions = {
-    createPlaylist,
-    search,
-    addSong,
-    getSongs,
-    generateString
+    createPlaylist: createPlaylist,
+    search: search,
+    addSong: addSong,
+    getSongs: getSongs,
+    generateString: generateString
 };
 
 
