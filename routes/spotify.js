@@ -122,16 +122,12 @@ var getSongs = function(req, res) {
 var generateString = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var playlists = db.collection('playlists');
-
-        var returnStr = '';
-
-
-        var playlist = playlists.findOne({'eventId': req.params.eventId}, function(err, playlist) {
+        var playlist = playlists.findOne({'eventId': new ObjectID(req.params.eventId)}, function(err, playlist) {
             if(err) {
                 res.json({success: false, message: "database error"});
             }
             else {
-                var returnStr = '';
+                var returnStr = 'https://open.spotify.com/trackset/playlist/';
 
                 if(playlist.songs.length > 0) {
                     var songs = playlist.songs;
@@ -142,7 +138,7 @@ var generateString = function(req, res) {
                         returnStr = returnStr + ',' + songs[i].songId;
                     }
 
-                    res.json({responseString: returnStr});
+                    res.json({success: true, url: returnStr});
                 }
             }
         });
