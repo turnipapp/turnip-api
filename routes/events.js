@@ -24,6 +24,18 @@ var transporter = nodemailer.createTransport({
 });
 
 
+function verifyDate(start, end, res) {
+    var date = new Date();
+    var dateStart = new Date(start);
+    var dateEnd = new Date(end);
+
+    if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
+        res.json({success: false, message: 'Invalid date'});
+        return false;
+    } else {
+        return {start: dateStart, end: dateEnd};
+    }
+}
 
 // Creates Event
 // POST /event
@@ -31,104 +43,98 @@ var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
 
-        var date = new Date();
-        var dateStart = new Date(req.body.dateStart);
-        var dateEnd = new Date(req.body.dateEnd);
-
-        if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
-          res.json({success: false, message: 'Invalid date'});
-          return;
-        }
-
+        // date.start and date.end will hold the dates
+        var date = verifyDate(req.body.dateStart, req.body.dateEnd, res);
+        if (date === false) return;
+        
         //Validates the address through Google Maps API
         //API found here: https://www.npmjs.com/package/address-validator
 
         var geocode;
 
-
-        addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key (Kyle's key)
-        addressValidator.validate(req.body.location, function(err, validAddresses, inexactMatches, geocodingResponse) {
-            if(err) {
-                res.json({success: false, message: 'Invalid location'});
-                return;
-            }
-
-            geocode = geocodingResponse;
-        });
-
         var events = db.collection('events');
         var invitesColl = db.collection('invites');
 
-
-        var myEvent = {
-            owner: new ObjectID(req.decoded._id),
-            title: req.body.title,
-            dateStart: req.body.dateStart,
-            dateEnd: req.body.dateEnd,
-            location: status,
-            theme: req.body.theme
-        };
-        events.insert(myEvent, function(err, result) {
-            if(err) {
-                res.json({success: false, message: 'Events database error'});
+        geocoder.geocode(req.body.location, function (results, status) {
+            if (status.status != "OK") {
+                res.json({success:false, message: "Invalid Location"});
+                return;
             }
 
-            var notifications = [];
-            var notification = {
-                type: 1,
-                seen: false,
-                message: 'You have been invited to the event ' + req.body.title + ' at ' + req.body.dateStart,
-                timestamp: new Date(),
-                eventId: myEvent._id
-            };
-            notifications.push(notification);
+            var lat = status.results[0].geometry.location.lat;
+            var lon = status.results[0].geometry.location.lon;
 
-            var inviteObj = {
-                userId: new ObjectID(req.decoded._id),
-                eventId: result.ops[0]._id,
-                response: 'yes',
-                notifications: notifications
+            var myEvent = {
+                owner: new ObjectID(req.decoded._id),
+                title: req.body.title,
+                dateStart: date.start,
+                dateEnd: date.end,
+                location: status.results[0],
+                theme: req.body.theme
             };
 
-            var invites = [];
-            for (var i = 0; i < req.body.invites.length; i++) {
-                var obj = {
-                    userId: new ObjectID(req.body.invites[i].id),
+            events.insert(myEvent, function(err, result) {
+                if(err) {
+                    res.json({success: false, message: 'Events database error'});
+                }
+
+                var notifications = [];
+                var notification = {
+                    type: 1,
+                    seen: false,
+                    event: myEvent,
+                    timestamp: new Date(),
+                    eventId: myEvent._id
+                };
+
+                notifications.push(notification);
+
+                var inviteObj = {
+                    userId: new ObjectID(req.decoded._id),
                     eventId: result.ops[0]._id,
-                    response: 'pending',
-                    username: req.body.invites[i].username,
+                    response: 'yes',
                     notifications: notifications
                 };
 
-                //Updates the number of events a user has been invited to.
-                users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
-                  if(err || !user) {
-                    res.json({success: false, message: 'User database error'});
-                    return;
-                  } else {
-                    if (isNaN(user.eventsInvited)) {
-                      user.eventsInvited = 0;
-                    }
-                    var newEventsInvited = user.eventsInvited + 1;
-                    users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
-                  }
-                });
-                invites.push(obj);
-            }
+                var invites = [];
+                for (var i = 0; i < req.body.invites.length; i++) {
+                    var obj = {
+                        userId: new ObjectID(req.body.invites[i].id),
+                        eventId: result.ops[0]._id,
+                        response: 'pending',
+                        username: req.body.invites[i].username,
+                        notifications: notifications
+                    };
 
-            invites.push(inviteObj);
-
-            invitesColl.insert(invites, function(err, invresult) {
-                if(err) {
-                    res.json({success: false, message: 'Invite database error'});
+                    //Updates the number of events a user has been invited to.
+                    users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
+                      if(err || !user) {
+                        res.json({success: false, message: 'User database error'});
+                        return;
+                      } else {
+                        if (isNaN(user.eventsInvited)) {
+                          user.eventsInvited = 0;
+                        }
+                        var newEventsInvited = user.eventsInvited + 1;
+                        users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
+                      }
+                    });
+                    invites.push(obj);
                 }
-                res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
 
-                sendInvites(invresult.ops, db);
+                invites.push(inviteObj);
 
+                invitesColl.insert(invites, function(err, invresult) {
+                    if(err) {
+                        res.json({success: false, message: 'Invite database error'});
+                    }
+                    res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
+
+                    sendInvites(invresult.ops, db);
+
+                });
             });
-        });
-      });
+          });
 
     });
 };
