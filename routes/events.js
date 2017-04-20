@@ -45,7 +45,7 @@ var create = function(req, res) {
 
         var geocode;
 
-/*
+
         addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'}); //Registers API key (Kyle's key)
         addressValidator.validate(req.body.location, function(err, validAddresses, inexactMatches, geocodingResponse) {
             if(err) {
@@ -55,18 +55,10 @@ var create = function(req, res) {
 
             geocode = geocodingResponse;
         });
-*/
+
         var events = db.collection('events');
         var invitesColl = db.collection('invites');
 
-        geocoder.geocode(req.body.location, function (results, status) {
-            if (status.status != "OK") {
-            res.json({success:false, message: "Invalid Location"});
-            return;
-          }
-
-          var lat = status.results[0].geometry.location.lat;
-          var lon = status.results[0].geometry.location.lon;
 
         var myEvent = {
             owner: new ObjectID(req.decoded._id),
