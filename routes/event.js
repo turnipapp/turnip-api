@@ -288,6 +288,22 @@ var getInviteStatus = function(req, res){
   });
 };
 
+var updateInvite = function (req, res) {
+    var eId = req.params.id;
+    var uId = req.decoded._id;
+    var status = req.body.status;
+
+    if (status === 'yes' || status === 'no' || status === 'maybe') {
+        MongoClient.connect(url, function(err, db) {
+            var invites = db.collection('invites');
+            invites.update({userId: new ObjectID(uId), eventId: new ObjectID(eId)}, {$set: {response: status}});
+            res.json({success: true, status: status});
+        });
+    } else {
+        res.json({success: false, message: 'Invalid Status'});
+    }
+};
+
 
 var functions = {
     getOne: getOne,
@@ -298,7 +314,8 @@ var functions = {
     deleteOneApp: deleteApp,
     getLocation: getLocation,
     deleteOne: deleteOne,
-    getInviteStatus: getInviteStatus
+    getInviteStatus: getInviteStatus,
+    updateInvite: updateInvite
 };
 
 module.exports = functions;
