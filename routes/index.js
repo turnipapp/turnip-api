@@ -1,5 +1,5 @@
 var router      = require('express').Router();
-var jwt         = require('jsonwebtoken'); 
+var jwt         = require('jsonwebtoken');
 var config      = require('../config');
 var auth        = require('./auth');
 var account 	= require('./account');
@@ -54,6 +54,7 @@ router.get('/posts/:id', posts.getAll);
 router.post('/posts/:id/like', posts.like);
 router.get('/event/:id/getLocation', event.getLocation);
 router.get('/event/:id/getInviteStatus', event.getInviteStatus);
+router.put('/event/:id/updateInvite', event.updateInvite);
 
 router.delete('/event/:id', event.deleteOne);
 
