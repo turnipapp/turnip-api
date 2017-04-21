@@ -25,7 +25,6 @@ function verifyDate(start, end, res) {
     var dateEnd = new Date(end);
 
     if (date.getTime() > dateStart.getTime() || dateEnd.getTime() < dateStart.getTime()) {
-        console.log("Date Error");
         res.json({success: false, message: 'Invalid date'});
         return false;
     } else {
@@ -53,7 +52,6 @@ var create = function(req, res) {
 
         geocoder.geocode(req.body.location, function (results, status) {
             if (status.status != "OK") {
-                console.log("geocode error");
                 res.json({success:false, message: "Invalid Location"});
                 return;
             }
@@ -72,7 +70,6 @@ var create = function(req, res) {
 
             events.insert(myEvent, function(err, result) {
                 if(err) {
-                    console.log("Insert Error");
                     res.json({success: false, message: 'Events database error'});
                 }
 
@@ -107,7 +104,6 @@ var create = function(req, res) {
                     //Updates the number of events a user has been invited to.
                     users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
                       if(err || !user) {
-                        console.log("User Error");
                         res.json({success: false, message: 'User database error'});
                         return;
                       } else {
@@ -125,10 +121,8 @@ var create = function(req, res) {
 
                 invitesColl.insert(invites, function(err, invresult) {
                     if(err) {
-                        console.log("Invite Err");
                         res.json({success: false, message: 'Invite database error'});
                     }
-                    console.log("Success");
                     res.json({success: true, message: 'Event created Successfully', eventId: result.ops[0]._id});
 
                     sendInvites(invresult.ops, db);
