@@ -1,7 +1,6 @@
 var router      = require('express').Router();
-var jwt         = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var config      = require('../config'); // get our config file
-
+var jwt         = require('jsonwebtoken'); 
+var config      = require('../config');
 var auth        = require('./auth');
 var account 	= require('./account');
 var events      = require('./events');
@@ -14,6 +13,7 @@ var posts       = require('./posts');
 var notifications  = require('./notifications');
 var spotify     = require('./spotify');
 var weather     = require('./weather');
+var feed        = require('./feed');
 
 /**********************
  * UNPROTECTED ROUTES *
@@ -94,5 +94,8 @@ router.delete('/spotify/:eventId/:songId', spotify.delete);
 
 /* Weather */
 router.get('/weather/get/:eventId', weather.get);
+
+/* Feed */
+router.get('/feed', feed.get);
 
 module.exports = router;
