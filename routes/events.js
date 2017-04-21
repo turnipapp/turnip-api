@@ -4,15 +4,10 @@ var config      = require('../config'); // get our config file
 var nodemailer  = require('nodemailer');
 var url         = process.env.MONGO_URL || config.database;
 var addressValidator = require('address-validator');
-var Address = addressValidator.Address;
-var _ = require('underscore');
-var fs = require('fs');
+var Address     = addressValidator.Address;
+var _           = require('underscore');
+var fs          = require('fs');
 var geocoder    = require('geocoder');
-
-
-
-
-
 var Async       = require('async');
 
 var transporter = nodemailer.createTransport({
@@ -46,7 +41,7 @@ var create = function(req, res) {
         // date.start and date.end will hold the dates
         var date = verifyDate(req.body.dateStart, req.body.dateEnd, res);
         if (date === false) return;
-        
+
         //Validates the address through Google Maps API
         //API found here: https://www.npmjs.com/package/address-validator
 

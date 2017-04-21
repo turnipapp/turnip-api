@@ -22,6 +22,36 @@ var themes = [
         name: 'Cole',
         small: 'http://i.imgur.com/Sieqnpz.jpg',
         large: 'http://i.imgur.com/oKEfIyO.jpg'
+    },
+    {
+        id: 4,
+        name: 'Graduation',
+        small: 'http://i.imgur.com/K36bN8x.jpg',
+        large: 'http://i.imgur.com/2Xkofib.jpg',
+    },
+    {
+        id: 5,
+        name: 'July 4th',
+        small: 'http://i.imgur.com/s97zseN.jpg',
+        large: 'http://i.imgur.com/CZyR22m.jpg'
+    },
+    {
+        id: 6,
+        name: 'Dad',
+        small: 'http://i.imgur.com/QwMg6bZ.jpg',
+        large: 'http://i.imgur.com/QwMg6bZ.jpg'
+    },
+    {
+        id: 7,
+        name: 'Birthday',
+        small: 'http://i.imgur.com/lwG2rYG.jpg',
+        large: 'http://i.imgur.com/lwG2rYG.jpg'
+    },
+    {
+        id: 8,
+        name: 'Road Trip',
+        small: 'http://i.imgur.com/6YR6CXK.jpg',
+        large: 'http://i.imgur.com/6YR6CXK.jpg'
     }
 ];
 
