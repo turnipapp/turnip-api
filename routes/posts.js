@@ -37,6 +37,39 @@ var getAll = function(req, res) {
     });
 };
 
+var getMemories = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var posts = db.collection('posts');
+        var users = db.collection('users');
+
+        posts.find({eventId: req.params.id}).toArray(function(err, docs) {
+            var sorted = sortByKey(docs, "score");
+            sorted.reverse();
+            if (docs.length > 0) {
+                Async.each(sorted, function(post, callback){
+                    if (post.likers) {
+                        post.likes = post.likers.length;
+                    }
+                    post.likers = [];
+                    users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
+                      if (!user) {
+                        res.json({success: false, message: 'no user found'});
+                      } else {
+                        post.name = user.firstName + " " + user.lastName;
+                      }
+                      callback();
+                    });
+
+                }, function(err) {
+                    res.json({success: true, posts: sorted});
+                });
+            } else {
+                res.json({success: true, posts: []});
+            }
+        });
+    });
+};
+
 var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
@@ -221,7 +254,8 @@ var functions = {
     edit: edit,
     delete: delete_post,
     addComment: addComment,
-    like: like
+    like: like,
+    getMemories: getMemories
 };
 
 function sortByKey(array, key) {
