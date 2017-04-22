@@ -43,7 +43,7 @@ var create = function(req, res) {
         if (date === false) return;
 
         //Validates the address through Google Maps API
-        //API found here: https://www.npmjs.com/package/address-validator
+        //API found here: https://www.npmjs.com/package/address-validator   <-- not current API
 
         var geocode;
 
