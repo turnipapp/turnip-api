@@ -19,8 +19,8 @@ var get = function (req,res) {
         res.json({succes: false, message: "Couldn't find event"});
         return;
       } else {
-          var lat = event.location.results[0].geometry.location.lat;
-          var lon = event.location.results[0].geometry.location.lng;
+          var lat = event.location.geometry.location.lat;
+          var lon = event.location.geometry.location.lng;
           var date = new Date(event.dateStart);
           var request = unirest.get(base_url + darkskyKey + '/' + lat + ',' + lon + date.getTime()).end(function (response) {
             res.json({success:true, weather: response, location: event.location.results[0].formatted_address});
