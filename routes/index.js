@@ -55,6 +55,7 @@ router.post('/posts/:id/like', posts.like);
 router.get('/event/:id/getLocation', event.getLocation);
 router.get('/event/:id/getInviteStatus', event.getInviteStatus);
 router.put('/event/:id/updateInvite', event.updateInvite);
+router.get('/event/:id/getMemories', posts.getMemories);
 
 router.delete('/event/:id', event.deleteOne);
 
