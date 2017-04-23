@@ -288,6 +288,30 @@ var getInviteStatus = function(req, res){
   });
 };
 
+var guests = function(req, res) {
+    MongoClient.connect(url, function(err, db) {
+        var invites = db.collection('invites');
+        var users = db.collection('users');
+
+        invites.find({"eventId": new ObjectID(req.params.id)}).toArray(function(err, eventInvites) {
+            var guests = [];
+            Async.each(eventInvites, function(invite, callback){
+                users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
+                    var skinnyUser = {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        _id: user._id
+                    };
+                    guests.push(skinnyUser);
+                    callback();
+                });
+            }, function(err) {
+                res.json({success: true, guests: guests});
+            });
+        });
+    });
+};
+
 var updateInvite = function (req, res) {
     var eId = req.params.id;
     var uId = req.decoded._id;
@@ -315,7 +339,8 @@ var functions = {
     getLocation: getLocation,
     deleteOne: deleteOne,
     getInviteStatus: getInviteStatus,
-    updateInvite: updateInvite
+    updateInvite: updateInvite,
+    guests: guests
 };
 
 module.exports = functions;

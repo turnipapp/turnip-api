@@ -28,7 +28,6 @@ function getPosts(events, userId, res) {
                 }
             }
             Async.each(posts, function(post, callback) {
-                console.log(post);
                 var item = {};
                 // Gets name of event
                 for (var j = 0; j < events.length; j++) {
@@ -80,7 +79,6 @@ var get = function(req, res) {
                   };
                   events.push(event);
                 }
-                console.log(events);
                 getPosts(events, req.decoded._id, res);
             });
         });

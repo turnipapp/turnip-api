@@ -25,8 +25,6 @@ var get = function (req,res) {
           var request = unirest.get(base_url + darkskyKey + '/' + lat + ',' + lon + date.getTime()).end(function (response) {
             res.json({success:true, weather: response, location: event.location.formatted_address});
           });
-
-          //console.log(request);
       }
     });
   });
