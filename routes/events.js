@@ -45,26 +45,24 @@ var create = function(req, res) {
         //Validates the address through Google Maps API
         //API found here: https://www.npmjs.com/package/address-validator   <-- not current API
 
-        var geocode;
-
+        
         var events = db.collection('events');
         var invitesColl = db.collection('invites');
 
-        geocoder.geocode(req.body.location, function (results, status) {
-            if (status.status != "OK") {
-                res.json({success:false, message: "Invalid Location"});
+        addressValidator.setOptions({'key': 'AIzaSyArir274wzJuJCIK2e6EgrsjQPEIAVqtP0'});  //Registers API key to Kyle
+        addressValidator.validate(req.body.location, function(err, validAddress, inexactMatches, geocodingResponse) {
+            if(err) {
+                res.json({success: false, message: 'Invalid location'});
+                exit = true;
                 return;
             }
-
-            var lat = status.results[0].geometry.location.lat;
-            var lon = status.results[0].geometry.location.lon;
 
             var myEvent = {
                 owner: new ObjectID(req.decoded._id),
                 title: req.body.title,
                 dateStart: date.start,
                 dateEnd: date.end,
-                location: status.results[0],
+                location: geocodingResponse.results[0],
                 theme: req.body.theme
             };
 
@@ -103,16 +101,16 @@ var create = function(req, res) {
 
                     //Updates the number of events a user has been invited to.
                     users.findOne({_id: new ObjectID(req.body.invites[i].id)}, function(err, user) {
-                      if(err || !user) {
+                        if(err || !user) {
                         res.json({success: false, message: 'User database error'});
                         return;
-                      } else {
+                        } else {
                         if (isNaN(user.eventsInvited)) {
-                          user.eventsInvited = 0;
+                            user.eventsInvited = 0;
                         }
                         var newEventsInvited = user.eventsInvited + 1;
                         users.update({_id: obj.userId}, {$set: {eventsInvited: newEventsInvited}});
-                      }
+                        }
                     });
                     invites.push(obj);
                 }
@@ -129,8 +127,8 @@ var create = function(req, res) {
 
                 });
             });
-          });
-
+            
+        });
     });
 };
 
