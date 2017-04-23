@@ -83,7 +83,8 @@ var create = function(req, res) {
             isImage: false,
             likes: 0,
             likers: [],
-            score: 0
+            score: 0,
+            tags: req.body.tags
         };
 
         /*
