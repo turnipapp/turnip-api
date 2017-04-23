@@ -23,7 +23,7 @@ var get = function (req,res) {
           var lon = event.location.geometry.location.lng;
           var date = new Date(event.dateStart);
           var request = unirest.get(base_url + darkskyKey + '/' + lat + ',' + lon + date.getTime()).end(function (response) {
-            res.json({success:true, weather: response, location: event.location.results[0].formatted_address});
+            res.json({success:true, weather: response, location: event.location.formatted_address});
           });
 
           //console.log(request);
