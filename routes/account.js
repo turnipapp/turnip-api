@@ -30,18 +30,25 @@ var update = function(req, res) {
 
         var userId = req.decoded._id;
         users.findOne({"_id": new ObjectID(userId)}, function(err, user) {
-            bcrypt.compare(req.body.password, user.password, function(err, match) {
-                if(!match){
-                    res.json({success: false, message: 'Password incorrect'});
-                } else {
-
-                    if('newPassword' in req.body){
-                        updateWithPassword(req.body, db, res, userId);
+            
+            
+            if('password' in req.body){
+            
+                bcrypt.compare(req.body.password, user.password, function(err, match) {
+                    if(!match){
+                        res.json({success: false, message: 'Password incorrect'});
                     } else {
-                        updateWithoutPassword(req.body, db, res, userId);
+
+                        if('newPassword' in req.body){
+                            updateWithPassword(req.body, db, res, userId);
+                        } else {
+                            updateWithoutPassword(req.body, db, res, userId);
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            else updateWithoutPassword(req.body, db, res, userId);
         });
     });
 };
