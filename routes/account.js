@@ -30,10 +30,7 @@ var update = function(req, res) {
 
         var userId = req.decoded._id;
         users.findOne({"_id": new ObjectID(userId)}, function(err, user) {
-            
-            
-            if('password' in req.body){
-            
+            if('password' in req.body){            
                 bcrypt.compare(req.body.password, user.password, function(err, match) {
                     if(!match){
                         res.json({success: false, message: 'Password incorrect'});
