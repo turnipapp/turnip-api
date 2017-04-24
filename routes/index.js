@@ -15,6 +15,8 @@ var spotify     = require('./spotify');
 var weather     = require('./weather');
 var feed        = require('./feed');
 var twilio      = require('./twilio');
+var uploadv2    = require('./uploadv2');
+
 /**********************
  * UNPROTECTED ROUTES *
  **********************/
@@ -81,8 +83,9 @@ router.put('/account/update', account.update);
 router.get('/user/:type/:data', user.getOne);
 
 
-/* Upload  (TEST) */
-router.put('/upload', upload.uploadimage);
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
+router.post('/upload/:id', multipartyMiddleware, uploadv2.upload);
 
 /* Notifications */
 router.get('/notifications/get', notifications.get);
