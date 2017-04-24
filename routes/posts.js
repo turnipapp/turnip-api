@@ -24,7 +24,16 @@ var getAll = function(req, res) {
                       } else {
                         post.name = user.firstName + " " + user.lastName;
                       }
-                      callback();
+                    });
+
+                    Async.each(post.comments, function(comment, commentCallback) {
+                        users.findOne({"_id": new ObjectID(comment.author)}, function(err, user) {
+                            comment.firstName = user.firstName;
+                            comment.lastName = user.lastName;
+                            commentCallback();
+                        });
+                    }, function(err) {
+                        callback();
                     });
 
                 }, function(err) {
