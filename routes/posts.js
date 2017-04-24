@@ -3,6 +3,7 @@ var ObjectID    = require('mongodb').ObjectID;
 var config      = require('../config'); // get our config file
 var url         = process.env.MONGO_URL || config.database;
 var Async       = require('async');
+var twilio      = require('./twilio');
 
 var getAll = function(req, res) {
     MongoClient.connect(url, function(err, db) {
@@ -73,7 +74,8 @@ var getMemories = function(req, res) {
 var create = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var posts = db.collection('posts');
-
+        var invites = db.collection('invites');
+        var users = db.collection('users');
         var postObj = {
             text: req.body.text,
             userId: new ObjectID(req.decoded._id),
@@ -102,11 +104,32 @@ var create = function(req, res) {
 
 
         posts.insert(postObj, function(err, result) {
-            res.json({success: true});
+            invites.find({"eventId": new ObjectID(req.body.eventId)}).toArray(function(err, docs) {
+           console.log(docs.length);
+                users.findOne({"_id": new ObjectID(req.decoded._id)}, function (err, sender) {
+                textUpdate(docs, req.body.text, sender);
+                res.json({success: true});
+            });
         });
+    });
     });
 };
 
+function textUpdate (docs, message, sender) {
+    MongoClient.connect(url, function(err, db) {
+    var users = db.collection('users');
+    docs = docs.map(function(id) { return new ObjectID(id.userId); }); 
+    
+    users.find({"_id": {$in: docs}}).toArray(function(err, docs) {
+       for (var i = 0; i <  docs.length; i++) {
+         //  console.log(docs[i]);
+            if (docs[i].phoneNumber) {
+                twilio.sendMessage(docs[i].phoneNumber, sender.firstName + " " + sender.lastName + ": " + message);
+            }
+       }
+    });
+    });   
+};
 /**
  * Allows user to edit post
  * req = {text: string}

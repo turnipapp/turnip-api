@@ -24,6 +24,7 @@ var getAccount = function(req, res) {
 };
 
 // Expects token, firstName, lastName, email, password, new password
+// and phone number
 var update = function(req, res) {
     MongoClient.connect(url, function(err, db) {
         var users = db.collection('users');
@@ -58,6 +59,7 @@ function updateWithPassword(body, db, res, userId){
             email: body.email,
             firstName: body.firstName,
             lastName: body.lastName,
+            phoneNumber: body.phoneNumber,
             password: hash
         }, function(err, result) {
             if(err) {
@@ -75,7 +77,8 @@ function updateWithoutPassword(body, db, res, userId){
     users.update({"_id": new ObjectID(userId)}, {$set: {
         email: body.email,
         firstName: body.firstName,
-        lastName: body.lastName
+        lastName: body.lastName,
+        phoneNumber: body.phoneNumber
     }}, function(err, result) {
         if(err) {
             res.json({success: false, message: 'Database error'});

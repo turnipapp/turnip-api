@@ -14,7 +14,7 @@ var notifications  = require('./notifications');
 var spotify     = require('./spotify');
 var weather     = require('./weather');
 var feed        = require('./feed');
-
+var twilio      = require('./twilio');
 /**********************
  * UNPROTECTED ROUTES *
  **********************/
@@ -100,5 +100,8 @@ router.get('/weather/get/:eventId', weather.get);
 
 /* Feed */
 router.get('/feed', feed.get);
+
+/* Twilio */
+router.post('/sendMessage', twilio.sendMessage);
 
 module.exports = router;
