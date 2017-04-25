@@ -37,6 +37,7 @@
     "s3-uploader": "^2.0.3",
     "spotify-web-api-node": "^2.3.6",
     "superagent": "^3.5.2",
+    "twilio": "^2.11.1",
     "unirest": "^0.5.1"
   },
   "devDependencies": {
