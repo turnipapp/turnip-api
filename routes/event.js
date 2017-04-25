@@ -313,14 +313,21 @@ var guests = function(req, res) {
 };
 
 var updateInvite = function (req, res) {
+
     var eId = req.params.id;
+    console.log("req.params.id: " + eId);
     var uId = req.decoded._id;
-    var status = req.body.status;
+    console.log("uId: " + uId);
+    var status = req.body.response;
+    console.log("status: " + status);
 
     if (status === 'yes' || status === 'no' || status === 'maybe') {
         MongoClient.connect(url, function(err, db) {
             var invites = db.collection('invites');
             invites.update({userId: new ObjectID(uId), eventId: new ObjectID(eId)}, {$set: {response: status}});
+            invites.findOne({userId: new ObjectID(uId), eventId: new ObjectID(eId)}, function(err, user) {
+              console.log(user.response);
+            });
             res.json({success: true, status: status});
         });
     } else {
