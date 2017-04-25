@@ -127,6 +127,7 @@ var generateString = function(req, res) {
                 res.json({success: false, message: "database error"});
             }
             else {
+                // var returnStr = 'https://open.spotify.com/trackset/playlist/';
                 var returnStr = 'https://embed.spotify.com/?uri=spotify:trackset:Spotify:';
 
                 if(playlist.songs.length > 0) {
