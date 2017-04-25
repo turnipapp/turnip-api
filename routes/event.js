@@ -265,7 +265,7 @@ var getInviteStatus = function(req, res){
               users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
 
                 if (!user) {
-                  res.json({success: false, message: 'no user found'});
+                    // hi
                 } else if (invite.response == 'no') {
                     no.push(user.firstName + " " + user.lastName);
                 } else if (invite.response == 'yes') {
@@ -297,12 +297,14 @@ var guests = function(req, res) {
             var guests = [];
             Async.each(eventInvites, function(invite, callback){
                 users.findOne({"_id": new ObjectID(invite.userId)}, function(err, user) {
-                    var skinnyUser = {
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        _id: user._id
-                    };
-                    guests.push(skinnyUser);
+                    if (user) {
+                        var skinnyUser = {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            _id: user._id
+                        };
+                        guests.push(skinnyUser);
+                    }
                     callback();
                 });
             }, function(err) {
