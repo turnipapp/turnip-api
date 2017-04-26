@@ -7,6 +7,9 @@
     "test": "mocha",
     "start": "node app.js"
   },
+  "engines": {
+    "node": "6.9.4"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/turnipapp/turnip-api.git"
