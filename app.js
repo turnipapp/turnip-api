@@ -5,7 +5,7 @@ var mongodb         = require('mongodb').MongoClient;
 var cors            = require('cors');
 var mongoUrl        = process.env.MONGO_URL || 'mongodb://localhost:27017/rachis';
 var mongoSessionUrl = process.env.MONGO_SESSION_URL || 'mongodb://localhost:27017/rachis';
-var port            = process.env.PORT || 5000;
+var port            = process.env.PORT || 8080;
 var logger          = require('morgan');
 var aws             = require('aws-sdk');
 
