@@ -1,10 +1,8 @@
 FROM node:boron
 
-LABEL \
-      # Location of the STI scripts inside the image.
-      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i \
-      # DEPRECATED: This label will be kept here for backward compatibility.
-      io.s2i.scripts-url=image:///usr/libexec/s2i
+
+LABEL io.openshift.s2i.scripts-url=image:///usr/local/s2i
+
 
 # Create app directory
 RUN mkdir -p /usr/src/app
