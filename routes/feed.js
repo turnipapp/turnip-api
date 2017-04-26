@@ -39,7 +39,12 @@ function getPosts(events, userId, res) {
                 }
 
                 item.timestamp = post.timestamp;
-                item.preview = post.text.substr(0, 20) + "...";
+                if (!post.isImage) {
+                    item.preview = post.text.substr(0, 20) + "...";
+                    item.isImage = false;
+                } else {
+                    item.isImage = true;
+                }
 
                 var users = db.collection('users');
 
