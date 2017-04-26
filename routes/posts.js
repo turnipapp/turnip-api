@@ -20,23 +20,20 @@ var getAll = function(req, res) {
                     }
                     post.likers = [];
                     users.findOne({"_id": new ObjectID(post.userId)}, function(err, user) {
-                      if (!user) {
-                        res.json({success: false, message: 'no user found'});
-                      } else {
-                        post.name = user.firstName + " " + user.lastName;
-                      }
-                    });
+                        if (user) {
+                            post.name = user.firstName + " " + user.lastName;
+                        }
 
-                    Async.each(post.comments, function(comment, commentCallback) {
-                        users.findOne({"_id": new ObjectID(comment.author)}, function(err, user) {
-                            comment.firstName = user.firstName;
-                            comment.lastName = user.lastName;
-                            commentCallback();
+                        Async.each(post.comments, function(comment, commentCallback) {
+                            users.findOne({"_id": new ObjectID(comment.author)}, function(err, user) {
+                                comment.firstName = user.firstName;
+                                comment.lastName = user.lastName;
+                                commentCallback();
+                            });
+                        }, function(err) {
+                            callback();
                         });
-                    }, function(err) {
-                        callback();
                     });
-
                 }, function(err) {
                     res.json({success: true, posts: sorted});
                 });
@@ -127,8 +124,8 @@ var create = function(req, res) {
 function textUpdate (docs, message, sender) {
     MongoClient.connect(url, function(err, db) {
     var users = db.collection('users');
-    docs = docs.map(function(id) { return new ObjectID(id.userId); }); 
-    
+    docs = docs.map(function(id) { return new ObjectID(id.userId); });
+
     users.find({"_id": {$in: docs}}).toArray(function(err, docs) {
        for (var i = 0; i <  docs.length; i++) {
          //  console.log(docs[i]);
@@ -137,7 +134,7 @@ function textUpdate (docs, message, sender) {
             }
        }
     });
-    });   
+    });
 };
 /**
  * Allows user to edit post
