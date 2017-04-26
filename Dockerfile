@@ -1,8 +1,4 @@
-FROM node:boron
-
-
-LABEL io.openshift.s2i.scripts-url=image:///usr/local/s2i
-
+FROM node:7.9.0
 
 # Create app directory
 RUN mkdir -p /usr/src/app
